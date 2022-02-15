@@ -20,7 +20,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
-    "lint": "eslint \"./src/**/*.{ts,tsx}\""
+    "lint": "eslint \"./src/**/*.{ts,tsx}\"",
+    "csslint": "stylelint \"./src/styles/**/*\" \"./src/**/*.css.tsx\""
   },
   "eslintConfig": {
     "extends": [
@@ -49,6 +50,11 @@
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.28.0",
-    "prettier": "2.5.1"
+    "prettier": "2.5.1",
+    "stylelint": "^14.5.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-standard": "^25.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.10.0"
   }
 }

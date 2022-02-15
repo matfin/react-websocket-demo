@@ -1,16 +1,14 @@
 import styled, { css } from 'styled-components';
 
-import { media } from './styles/mixins'
+import { media } from './styles/mixins';
 
 export const Container = styled.div`
   width: 100vw;
   height: 100vh;
-
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-
   background-color: brown;
 
   ${media.sm(css`
