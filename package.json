@@ -7,9 +7,11 @@
     "@types/node": "^16.7.13",
     "@types/react": "^17.0.20",
     "@types/react-dom": "^17.0.9",
+    "@types/styled-components": "^5.1.22",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-scripts": "5.0.0",
+    "styled-components": "^5.3.3",
     "typescript": "^4.4.2",
     "web-vitals": "^2.1.0"
   },
@@ -18,7 +20,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --watchAll=false",
     "eject": "react-scripts eject",
-    "lint": "eslint \"./src/**/*.{ts,tsx}\""
+    "lint": "eslint \"./src/**/*.{ts,tsx}\"",
+    "csslint": "stylelint \"./src/styles/**/*\" \"./src/**/*.css.tsx\""
   },
   "eslintConfig": {
     "extends": [
@@ -47,6 +50,11 @@
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.28.0",
-    "prettier": "2.5.1"
+    "prettier": "2.5.1",
+    "stylelint": "^14.5.0",
+    "stylelint-config-prettier": "^9.0.3",
+    "stylelint-config-standard": "^25.0.0",
+    "stylelint-config-styled-components": "^0.1.1",
+    "stylelint-processor-styled-components": "^1.10.0"
   }
 }

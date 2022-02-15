@@ -1,5 +1,8 @@
 import React, { useEffect } from 'react';
 
+import { GlobalStyle } from './styles/global'
+import { Container } from './App.css'
+
 export const App = () => {
   useEffect((): (() => void) => {
     console.log('App booting up');
@@ -8,9 +11,12 @@ export const App = () => {
   }, []);
 
   return (
-    <div className="App">
-      <h1>WebSockets are coming soon!</h1>
-    </div>
+    <>
+      <Container>
+        <h1>WebSockets are coming soon!</h1>
+      </Container>
+      <GlobalStyle />
+    </>
   );
 };
 
