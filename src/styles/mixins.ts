@@ -1,4 +1,6 @@
-import { FlattenSimpleInterpolation } from 'styled-components';
+import { css, FlattenSimpleInterpolation } from 'styled-components';
+
+import { Font } from './vars.types';
 import { breakpoints } from './vars';
 
 export const sizeQuery = (
@@ -13,3 +15,9 @@ export const media = {
   xl: (css: FlattenSimpleInterpolation): string => sizeQuery(breakpoints.xl, css),
   xxl: (css: FlattenSimpleInterpolation): string => sizeQuery(breakpoints.xxl, css),
 }
+
+
+export const font = ({ lineHeight, size }: Font) => css`
+  font-size: ${size}rem;
+  line-height: ${lineHeight}rem;
+`;

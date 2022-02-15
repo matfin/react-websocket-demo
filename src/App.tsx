@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Link, Routes, Route } from 'react-router-dom';
-
 import { GlobalStyle } from './styles/global'
 
 import IsinList from './views/isin-list';
@@ -9,12 +8,6 @@ import IsinSearch from './views/isin-search';
 import { Container, Header, Main } from './App.css'
 
 export const App = () => {
-  useEffect((): (() => void) => {
-    console.log('App booting up');
-
-    return () => console.log('App tearing down');
-  }, []);
-
   return (
     <>
       <Container>
@@ -28,8 +21,8 @@ export const App = () => {
         </Header>
         <Main>
           <Routes>
-            <Route path="/" element={<IsinList componentId="isinList" />} />
-            <Route path="/search" element={<IsinSearch componentId="isinSearch" />} />
+            <Route path="/" element={<IsinList />} />
+            <Route path="/search" element={<IsinSearch />} />
           </Routes>
         </Main>
       </Container>
