@@ -1,33 +1,22 @@
-import styled, { css } from 'styled-components';
-
-import { media } from './styles/mixins';
+import styled from 'styled-components';
 
 export const Container = styled.div`
+  position: relative;
+  display: grid;
   width: 100vw;
-  height: 100vh;
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  background-color: brown;
-
-  ${media.sm(css`
-    background-color: red;
-  `)}
-
-  ${media.md(css`
-    background-color: green;
-  `)}
-
-  ${media.lg(css`
-    background-color: blue;
-  `)}
-
-  ${media.xl(css`
-    background-color: yellow;
-  `)}
-
-  ${media.xxl(css`
-    background-color: orange;
-  `)}
+  min-height: 100vh;
+  grid: 4rem auto / 1rem auto 1rem;
+  grid-template-areas:
+    "header header header"
+    ". main ."
 `;
+
+export const Header = styled.header`
+  grid-area: header;
+  background-color: blue;
+`
+
+export const Main = styled.main`
+  grid-area: main;
+  background-color: red;
+`
