@@ -1,7 +1,12 @@
 import React, { useEffect } from 'react';
+import { Link, Routes, Route } from 'react-router-dom';
 
 import { GlobalStyle } from './styles/global'
-import { Container } from './App.css'
+
+import IsinList from './views/isin-list';
+import IsinSearch from './views/isin-search';
+
+import { Container, Header, Main } from './App.css'
 
 export const App = () => {
   useEffect((): (() => void) => {
@@ -13,7 +18,20 @@ export const App = () => {
   return (
     <>
       <Container>
-        <h1>WebSockets are coming soon!</h1>
+        <Header>
+          <Link to="/">
+            Home
+          </Link>
+          <Link to="/search">
+            Search ISIN
+          </Link>
+        </Header>
+        <Main>
+          <Routes>
+            <Route path="/" element={<IsinList componentId="isinList" />} />
+            <Route path="/search" element={<IsinSearch componentId="isinSearch" />} />
+          </Routes>
+        </Main>
       </Container>
       <GlobalStyle />
     </>
