@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Apple",
+    "shortName": "AAPL",
+    "isin": "US0378331005"
+  },
+  {
+    "name": "BASF",
+    "shortName": "BASF SE",
+    "isin": "DE000BASF111"
+  },
+  {
+    "name": "China Airlines",
+    "shortName": "ZNH",
+    "isin": "TW0002610003"
+  },
+  {
+    "name": "DuPont",
+    "shortName": "DD",
+    "isin": "US26614N1028"
+  },
+  {
+    "name": "Exor NV",
+    "shortName": "EXO",
+    "isin": "NL0012059018"
+  },
+  {
+    "name": "Foxconn",
+    "shortName": "FXCOF",
+    "isin": "TW0002354008"
+  },
+  {
+    "name": "Glencore",
+    "shortName": "GLEN",
+    "isin": "JE00B4T3BW64"
+  },
+  {
+    "name": "Honda",
+    "shortName": "HMC",
+    "isin": "JP3854600008"
+  }
+]

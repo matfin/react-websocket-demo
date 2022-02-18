@@ -7,6 +7,11 @@ export const GlobalStyle = createGlobalStyle`
     margin: 0;
   }
 
+  body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-variant-ligatures: no-common-ligatures;
+  }
+
   a {
     color: inherit;
     text-decoration: none;
@@ -14,6 +19,10 @@ export const GlobalStyle = createGlobalStyle`
   
   ul {
     list-style: none;
+  }
+
+  input {
+    outline: none;
   }
 `;
 
