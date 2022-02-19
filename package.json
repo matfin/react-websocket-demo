@@ -26,7 +26,8 @@
     "coverage": "react-scripts test --coverage  --watchAll=false",
     "eject": "react-scripts eject",
     "lint": "eslint \"./src/**/*.{ts,tsx}\"",
-    "csslint": "stylelint \"./src/styles/**/*\" \"./src/**/*.css.tsx\""
+    "csslint": "stylelint \"./src/styles/**/*\" \"./src/**/*.css.tsx\"",
+    "checks": "yarn coverage && yarn lint && yarn csslint"
   },
   "eslintConfig": {
     "extends": [
@@ -56,6 +57,7 @@
       }
     },
     "coveragePathIgnorePatterns": [
+      "src/components/svg.tsx",
       "src/index.tsx",
       "src/store.ts"
     ]

@@ -12,11 +12,19 @@ export type Breakpoints = {
 };
 
 export type Fonts = {
+  xs: Font;
   sm: Font;
   md: Font;
   lg: Font;
   xl: Font;
 };
+
+export type FontWeights = {
+  ultraLight: number;
+  light: number;
+  strong: number;
+  strongest: number;
+}
 
 export type Colours = {
   primary: string;

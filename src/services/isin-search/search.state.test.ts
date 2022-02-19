@@ -119,6 +119,9 @@ describe('search state', (): void => {
         companies,
         searchTerm,
       },
+      list: {
+        instruments: {},
+      }
     };
 
     it('getSearchTerm', (): void => {
