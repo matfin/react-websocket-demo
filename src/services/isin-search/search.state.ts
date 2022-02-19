@@ -20,6 +20,8 @@ const reset = (): SearchAction => ({
   type: RESET,
 });
 
+
+/** Initial state */
 const initialState: SearchState = {
   searchTerm: '',
   companies: (isins as Company[]),

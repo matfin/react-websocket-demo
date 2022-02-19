@@ -4,20 +4,23 @@ import { GlobalStyle } from './styles/global'
 
 import IsinList from './views/isin-list';
 import IsinSearch from './views/isin-search';
+import { Plus } from './components/svg';
 
-import { Container, Header, Main } from './App.css'
+import { BrandLogo, Container, Header, Nav, Main, SearchButton } from './App.css'
 
 export const App = () => {
   return (
     <>
       <Container>
         <Header>
-          <Link to="/">
-            Home
-          </Link>
-          <Link to="/search">
-            Search ISIN
-          </Link>
+          <Nav>
+            <Link to="/">
+              <BrandLogo />
+            </Link>
+            <SearchButton to="/search">
+              Add <Plus fill="#fff" />
+            </SearchButton>
+          </Nav>
         </Header>
         <Main>
           <Routes>

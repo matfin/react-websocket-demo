@@ -7,6 +7,7 @@ import { Search, Props } from './search';
 const defaultProps: Props = {
   companies: [],
   searchTerm: '',
+  addInstrument: jest.fn(),
   reset: jest.fn(),
   updateSearchTerm: jest.fn(),
 };
@@ -37,6 +38,24 @@ describe('<Search />', (): void => {
     await waitFor((): void => {
       expect(spyUpdateSearchTerm).toHaveBeenCalledTimes(1);
       expect(spyUpdateSearchTerm).toHaveBeenCalledWith('Test');
+    });
+  });
+
+  it('adds an instrument on click', async (): Promise<void> => {
+    const spyAddInstrument = jest.fn();
+    const company: Company = {
+      name: 'Test',
+      shortName: 'TST',
+      isin: 'IE123',
+    };
+    const { getByRole } = render(<Search {...defaultProps} addInstrument={spyAddInstrument} companies={[company]} />);
+    const resultItem = getByRole('button');
+
+    fireEvent.click(resultItem);
+
+    await waitFor((): void => {
+      expect(spyAddInstrument).toHaveBeenCalledTimes(1);
+      expect(spyAddInstrument).toBeCalledWith(company);
     });
   });
 

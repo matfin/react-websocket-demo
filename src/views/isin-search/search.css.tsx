@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { colours, fonts } from '../../styles/vars';
+import { boxShadow, colours, fonts } from '../../styles/vars';
 import { font } from '../../styles/mixins';
 import TextInput from '../../components/text-input';
 import SearchResult from '../../components/search-result';
@@ -42,7 +42,9 @@ export const ResultsList = styled.ul`
 `;
 
 export const ResultItem = styled(SearchResult)`
-  margin: 1rem 0 1.5rem 1rem;
+  margin: 1rem;
+  padding: 0.5rem;
+  ${boxShadow};
 `;
 
 export const NoResults = styled.h2`

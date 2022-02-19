@@ -1,4 +1,5 @@
-import { Breakpoints, Colours, Fonts } from './vars.types';
+import { css } from 'styled-components';
+import { Breakpoints, Colours, Fonts, FontWeights } from './vars.types';
 
 export const breakpoints: Breakpoints = {
   sm: 320,
@@ -9,6 +10,10 @@ export const breakpoints: Breakpoints = {
 };
 
 export const fonts: Fonts = {
+  xs: {
+    size: 0.8,
+    lineHeight: 1.0,
+  },
   sm: {
     size: 1.0,
     lineHeight: 1.3,
@@ -27,9 +32,20 @@ export const fonts: Fonts = {
   },
 };
 
+export const fontWeights: FontWeights = {
+  ultraLight: 100,
+  light: 300,
+  strong: 400,
+  strongest: 600,
+};
+
 export const colours: Colours = {
   primary: '#000',
   secondary: '#fff',
   tertiary: '#8090a0',
   cta: '#ff5833',
 };
+
+export const boxShadow = css`
+  box-shadow: rgb(0 0 0 / 30%) 0 1px 3px;
+`;

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { CombinedAppState } from '../../store.types';
 import SearchState from '../../services/isin-search/search.state';
 import { Company } from '../../services/isin-search/search.state.types';
+import ListState from '../../services/isin-list/list.state';
 
 import {
   Container,
@@ -19,12 +20,14 @@ export interface Props {
   searchTerm: string | undefined;
 
   reset: () => void;
+  addInstrument: (company: Company) => void;
   updateSearchTerm: (searchTerm: string) => void;
 }
 
 export const Search = ({
   companies,
   searchTerm,
+  addInstrument,
   reset,
   updateSearchTerm,
 }: Props): JSX.Element => {
@@ -41,6 +44,13 @@ export const Search = ({
       } = e;
 
       updateSearchTerm(value);
+    },
+    []
+  );
+
+  const handleResultItemClick = useCallback(
+    (company: Company): void => {
+      addInstrument(company);
     },
     []
   );
@@ -63,7 +73,7 @@ export const Search = ({
         ) : (
           <ResultsList>
             {companies.map((company: Company): JSX.Element => (
-              <ResultItem key={company.isin} company={company} />
+              <ResultItem onPress={handleResultItemClick} key={company.isin} company={company} />
             ))}
           </ResultsList>
         )
@@ -79,6 +89,7 @@ const mapStateToProps = (store: CombinedAppState) => ({
 });
 
 const mapDispatchToProps = {
+  addInstrument: ListState.actions.addInstrument,
   updateSearchTerm: SearchState.actions.updateSearchTerm,
   reset: SearchState.actions.reset,
 };
