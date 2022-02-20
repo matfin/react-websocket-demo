@@ -1,17 +1,22 @@
 import { Company } from '../isin-search/search.state.types';
 
+export interface StockData {
+  ask: number;
+  bid: number;
+  isin: string;
+  price: number;
+}
+
 export interface Instrument {
   company: Company;
-  price: number;
-  bid: number;
-  ask: number;
+  stockData: StockData;
   subscribed: boolean;
 }
 
 export interface Payload {
   company?: Company;
   instrument?: Instrument;
-  isin?: string;
+  stockData?: StockData;
 }
 
 export interface Instruments {

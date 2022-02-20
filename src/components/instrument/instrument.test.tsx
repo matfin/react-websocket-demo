@@ -1,5 +1,5 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 
 import InstrumentTile, { Props } from './instrument';
 
@@ -10,11 +10,15 @@ const defaultProps: Props = {
       name: 'Test Company',
       shortName: 'TST',
     },
-    bid: 1.0,
-    price: 1.2,
-    ask: 1.1,
+    stockData: {
+      isin: 'TEST123',
+      bid: 1.0,
+      price: 1.2,
+      ask: 1.1,
+    },
     subscribed: false,
   },
+  onPressDelete: jest.fn()
 };
 
 describe('<InstrumentTile />', (): void => {
@@ -30,5 +34,17 @@ describe('<InstrumentTile />', (): void => {
     expect(getByText('Bid €1.00')).not.toBeNull();
     expect(getByText('Ask €1.10')).not.toBeNull();
     expect(getByText('Price €1.20')).not.toBeNull();
+  });
+
+  it('executes the correct callback on press delete', async (): Promise<void> => {
+    const spyOnPressDelete = jest.fn();
+    const { getByTestId } = render(<InstrumentTile {...defaultProps} onPressDelete={spyOnPressDelete} />);
+    const deleteButton = getByTestId(`delete-instrument-TEST123`);
+
+    fireEvent.click(deleteButton);
+
+    await waitFor((): void => {
+      expect(spyOnPressDelete).toHaveBeenCalledTimes(1);
+    });
   });
 });

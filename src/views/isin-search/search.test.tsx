@@ -1,11 +1,13 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 
+import { Instrument } from '../../services/isin-list/list.state.types';
 import { Company } from '../../services/isin-search/search.state.types';
 import { Search, Props } from './search';
 
 const defaultProps: Props = {
   companies: [],
+  subscribedInstruments: [],
   searchTerm: '',
   addInstrument: jest.fn(),
   reset: jest.fn(),
@@ -33,7 +35,7 @@ describe('<Search />', (): void => {
     );
     const input = getByRole('textbox');
 
-    fireEvent.change(input, { target: { value: 'Test' } })
+    fireEvent.change(input, { target: { value: 'Test' } });
 
     await waitFor((): void => {
       expect(spyUpdateSearchTerm).toHaveBeenCalledTimes(1);
@@ -48,7 +50,13 @@ describe('<Search />', (): void => {
       shortName: 'TST',
       isin: 'IE123',
     };
-    const { getByRole } = render(<Search {...defaultProps} addInstrument={spyAddInstrument} companies={[company]} />);
+    const { getByRole } = render(
+      <Search
+        {...defaultProps}
+        addInstrument={spyAddInstrument}
+        companies={[company]}
+      />
+    );
     const resultItem = getByRole('button');
 
     fireEvent.click(resultItem);
@@ -64,15 +72,33 @@ describe('<Search />', (): void => {
       const companies: Company[] = [
         { name: 'Test One', shortName: 'ONE', isin: 'IE123' },
       ];
-      const { getByText } = render(<Search {...defaultProps} companies={companies} searchTerm="test" />);
+      const subscribedInstrument: Instrument = {
+        company: companies[0],
+        subscribed: true,
+        stockData: {
+          ask: 1.0,
+          bid: 1.1,
+          price: 1.2,
+          isin: 'IE123',
+        },
+      };
+      const { getByText } = render(
+        <Search
+          {...defaultProps}
+          subscribedInstruments={[subscribedInstrument]}
+          companies={companies}
+          searchTerm="test"
+        />
+      );
 
       expect(getByText('Test One')).not.toBeNull();
-      expect(getByText('ONE')).not.toBeNull();
-      expect(getByText('IE123')).not.toBeNull();
+      expect(getByText('IE123 / ONE')).not.toBeNull();
     });
 
     it('renders the correct text when there are no results', (): void => {
-      const { getByText } = render(<Search {...defaultProps} companies={[]} searchTerm="test" />);
+      const { getByText } = render(
+        <Search {...defaultProps} companies={[]} searchTerm="test" />
+      );
 
       expect(getByText('No results for test')).not.toBeNull();
     });

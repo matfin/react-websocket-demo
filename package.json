@@ -49,7 +49,7 @@
   },
   "jest": {
     "coverageThreshold": {
-     "global": {
+      "global": {
         "branches": 100,
         "functions": 100,
         "lines": 100,
@@ -59,7 +59,8 @@
     "coveragePathIgnorePatterns": [
       "src/components/svg.tsx",
       "src/index.tsx",
-      "src/store.ts"
+      "src/store.ts",
+      "src/sagas.ts"
     ]
   },
   "devDependencies": {

@@ -121,6 +121,11 @@ describe('search state', (): void => {
       },
       list: {
         instruments: {},
+      },
+      connection: {
+        connected: false,
+        error: null,
+        socket: null,
       }
     };
 
