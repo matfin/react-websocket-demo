@@ -1,30 +1,33 @@
 import React, { useCallback } from 'react';
 
 import { Company } from '../../services/isin-search/search.state.types';
-import { Container, Isin, ShortName, Title } from './search-result.css';
+import { BookmarkIcon, BookmarkFilledIcon, Container, CompanyDetails, Title } from './search-result.css';
 
 export interface Props {
   className?: string;
   company: Company;
+  isSubscribed: boolean;
   onPress?: (company: Company) => void;
 }
 
-const SearchResult = ({ className, company, onPress }: Props): JSX.Element => {
+const SearchResult = ({ className, company, isSubscribed, onPress }: Props): JSX.Element => {
   const handleOnClick = useCallback((): void => {
-    onPress && onPress(company);
-  }, [company]);
+    !isSubscribed && onPress && onPress(company);
+  }, [company, isSubscribed]);
 
   return (
     <Container className={className} onClick={handleOnClick} role="button">
       <Title>
         {company.name}
       </Title>
-      <Isin>
-        {company.isin}
-      </Isin>
-      <ShortName>
-        {company.shortName}
-      </ShortName>
+      <CompanyDetails>
+        {company.isin} / {company.shortName}
+      </CompanyDetails>
+      {isSubscribed ? (
+        <BookmarkFilledIcon />
+      ) : (
+        <BookmarkIcon />
+      )}
     </Container>
   );
 };

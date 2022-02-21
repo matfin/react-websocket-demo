@@ -19,7 +19,9 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['react', 'react-hooks', '@typescript-eslint'],
-  rules: {},
+  rules: {
+    "@typescript-eslint/no-non-null-assertion": "off"
+  },
   settings: {
     react: {
       version: 'detect'

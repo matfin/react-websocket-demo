@@ -24,6 +24,16 @@ export const GlobalStyle = createGlobalStyle`
   input {
     outline: none;
   }
+
+  button {
+    border: none;
+    background-color: inherit;
+    -webkit-tap-highlight-color: transparent;
+    
+    &:focus {
+      outline: 0;
+    }
+  }
 `;
 
 export default GlobalStyle;

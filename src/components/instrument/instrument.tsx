@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import { formattedCurrency } from '../../utils';
 
@@ -9,24 +9,28 @@ import {
   CompanyName,
   CompanyMetadata,
   PriceInfo,
-  PriceItem
+  PriceItem,
+  DeleteButton,
+  DeleteIcon,
 } from './instrument.css';
 
 export interface Props {
   className?: string;
+  role?: string;
   instrument: Instrument;
+  onPressDelete: (instrument: Instrument) => void;
 }
 
-const InstrumentTile = ({ className, instrument }: Props): JSX.Element => {
+const InstrumentTile = ({ className, role, instrument, onPressDelete }: Props): JSX.Element => {
   const {
     company,
-    bid,
-    price,
-    ask
+    stockData,
   } = instrument;
 
+  const handlePressDelete = useCallback((): void => onPressDelete(instrument), []);
+
   return (
-    <Container className={className}>
+    <Container role={role} className={className} onClick={handlePressDelete}>
       <CompanyInfo>
         <CompanyName>
           {company.name}
@@ -37,14 +41,17 @@ const InstrumentTile = ({ className, instrument }: Props): JSX.Element => {
       </CompanyInfo>
       <PriceInfo>
         <PriceItem>
-          Bid {formattedCurrency(bid)}
+          Bid {formattedCurrency(stockData.bid)}
         </PriceItem>
         <PriceItem>
-          Ask {formattedCurrency(ask)}
+          Ask {formattedCurrency(stockData.ask)}
         </PriceItem>
         <PriceItem>
-          Price {formattedCurrency(price)}
+          Price {formattedCurrency(stockData.price)}
         </PriceItem>
+        <DeleteButton data-testid={`delete-instrument-${instrument.company.isin}`}>
+          <DeleteIcon />
+        </DeleteButton>
       </PriceInfo>
     </Container>
   );

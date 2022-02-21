@@ -1,12 +1,45 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { fireEvent, render, waitFor } from '@testing-library/react';
 
 import { Instrument } from '../../services/isin-list/list.state.types';
 
 import { List, Props } from './list';
 
+const instruments: Instrument[] = [
+  {
+    company: {
+      name: 'Test',
+      shortName: 'TST',
+      isin: 'IE123',
+    },
+    stockData: {
+      ask: 1.0,
+      bid: 1.1,
+      price: 1.2,
+      isin: 'IE123',
+    },
+    subscribed: false,
+  },
+  {
+    company: {
+      name: 'Other',
+      shortName: 'OTH',
+      isin: 'IE456',
+    },
+    stockData: {
+      ask: 2.0,
+      bid: 2.1,
+      price: 2.2,
+      isin: 'IE456',
+    },
+    subscribed: true,
+  },
+];
+
 const defaultProps: Props = {
-  instruments: [],
+  openConnection: jest.fn(),
+  unsubscribe: jest.fn(),
+  instruments,
 };
 
 describe('<List />', (): void => {
@@ -14,32 +47,30 @@ describe('<List />', (): void => {
     expect(() => render(<List {...defaultProps} />)).not.toThrow();
   });
 
+  it('calls to open a connection on mount', (): void => {
+    const spyOpenConnection = jest.fn();
+    
+    render(<List {...defaultProps} openConnection={spyOpenConnection} />);
+
+    expect(spyOpenConnection).toHaveBeenCalledTimes(1);
+  });
+
+  it('calls to unsubscribe on press delete', async (): Promise<void> => {
+    const spyUnsubscribe = jest.fn();
+    const { getByTestId } = render(<List {...defaultProps} unsubscribe={spyUnsubscribe} />);
+    const deleteButton = getByTestId(`delete-instrument-${instruments[0].company.isin}`);
+
+    fireEvent.click(deleteButton);
+
+    await waitFor((): void => {
+      expect(spyUnsubscribe).toHaveBeenCalledTimes(1);
+      expect(spyUnsubscribe).toHaveBeenCalledWith(instruments[0]);
+    });
+  });
+
   describe('rendering instruments', (): void => {
     it('renders a list of instruments', (): void => {
-      const instruments: Instrument[] = [
-        {
-          company: {
-            name: 'Test',
-            shortName: 'TST',
-            isin: 'IE123',
-          },
-          ask: 1.0,
-          bid: 1.1,
-          price: 1.2,
-          subscribed: false,
-        },
-        {
-          company: {
-            name: 'Other',
-            shortName: 'OTH',
-            isin: 'IE456',
-          },
-          ask: 2.0,
-          bid: 2.1,
-          price: 2.2,
-          subscribed: true,
-        },
-      ];
+      
       const { getByText, queryByText } = render(<List {...defaultProps} instruments={instruments} />);
 
       expect(getByText('Test')).not.toBeNull();
@@ -48,7 +79,7 @@ describe('<List />', (): void => {
     });
 
     it('renders a message when there are no instruments in the list', (): void => {
-      const { getByText } = render(<List {...defaultProps} />);
+      const { getByText } = render(<List {...defaultProps} instruments={[]} />);
 
       expect(getByText('Add some companies to see the latest updates!')).not.toBeNull();
     });

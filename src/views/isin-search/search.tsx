@@ -5,6 +5,7 @@ import { CombinedAppState } from '../../store.types';
 import SearchState from '../../services/isin-search/search.state';
 import { Company } from '../../services/isin-search/search.state.types';
 import ListState from '../../services/isin-list/list.state';
+import { Instrument } from '../../services/isin-list/list.state.types';
 
 import {
   Container,
@@ -17,6 +18,7 @@ import {
 
 export interface Props {
   companies: Company[];
+  subscribedInstruments: Instrument[];
   searchTerm: string | undefined;
 
   reset: () => void;
@@ -26,12 +28,16 @@ export interface Props {
 
 export const Search = ({
   companies,
+  subscribedInstruments,
   searchTerm,
   addInstrument,
   reset,
   updateSearchTerm,
 }: Props): JSX.Element => {
   const shouldShowNoResults = companies.length === 0;
+  const subscribedInstrumentIsins: string[] = subscribedInstruments.map(
+    ({ company }: Instrument): string => company.isin
+  );
 
   useEffect((): (() => void) => {
     return (): void => reset();
@@ -48,12 +54,9 @@ export const Search = ({
     []
   );
 
-  const handleResultItemClick = useCallback(
-    (company: Company): void => {
-      addInstrument(company);
-    },
-    []
-  );
+  const handleResultItemClick = useCallback((company: Company): void => {
+    addInstrument(company);
+  }, []);
 
   return (
     <Container>
@@ -65,25 +68,33 @@ export const Search = ({
           value={searchTerm}
         />
       </SearchHeader>
-      {
-        shouldShowNoResults ? (
-          <NoResults>
-            No results for {searchTerm}
-          </NoResults>
-        ) : (
-          <ResultsList>
-            {companies.map((company: Company): JSX.Element => (
-              <ResultItem onPress={handleResultItemClick} key={company.isin} company={company} />
-            ))}
-          </ResultsList>
-        )
-      }
+      {shouldShowNoResults ? (
+        <NoResults>No results for {searchTerm}</NoResults>
+      ) : (
+        <ResultsList>
+          {companies.map((company: Company): JSX.Element => {
+            const isSubscribed: boolean = subscribedInstrumentIsins.includes(
+              company.isin
+            );
+
+            return (
+              <ResultItem
+                onPress={handleResultItemClick}
+                key={company.isin}
+                company={company}
+                isSubscribed={isSubscribed}
+              />
+            );
+          })}
+        </ResultsList>
+      )}
     </Container>
   );
 };
 
 /* istanbul ignore next */
 const mapStateToProps = (store: CombinedAppState) => ({
+  subscribedInstruments: ListState.selectors.getInstruments(store),
   companies: SearchState.selectors.getCompanies(store),
   searchTerm: SearchState.selectors.getSearchTerm(store),
 });
