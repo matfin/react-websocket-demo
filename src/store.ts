@@ -3,11 +3,13 @@ import createSagaMiddleware, { SagaMiddleware } from 'redux-saga';
 
 import { CombinedAppState, ReduxAction } from './store.types';
 import rootSaga from './sagas';
+import bannerState from './services/notification-banner/banner.state';
 import searchState from './services/isin-search/search.state';
 import listState from './services/isin-list/list.state';
 import connectionState from './services/connection/connection.state';
 
 const rootReducer: Reducer<CombinedAppState, ReduxAction> = combineReducers({
+  banner: bannerState.reducer,
   connection: connectionState.reducer,
   search: searchState.reducer,
   list: listState.reducer

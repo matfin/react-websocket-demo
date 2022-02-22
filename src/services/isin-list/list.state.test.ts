@@ -1,6 +1,7 @@
 import { CombinedAppState } from '../../store.types';
 import { Company } from '../isin-search/search.state.types';
 import { Instrument, ListState, StockData } from './list.state.types';
+import { BannerType } from '../notification-banner/banner.state.types';
 import listState, {
   handleAddInstrument,
   handleRemoveInstrument,
@@ -199,6 +200,10 @@ describe('list state', (): void => {
         error: null,
         socket: null,
       },
+      banner: {
+        type: BannerType.SUCCESS,
+        isShowing: false
+      }
     };
 
     it('getInstruments', (): void => {

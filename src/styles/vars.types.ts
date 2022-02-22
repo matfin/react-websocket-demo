@@ -30,5 +30,7 @@ export type Colours = {
   primary: string;
   secondary: string;
   tertiary: string;
-  cta: string;
+  success: string;
+  warning: string;
+  error: string;
 };

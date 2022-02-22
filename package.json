@@ -1,6 +1,6 @@
 {
   "name": "react-websocket-demo",
-  "version": "0.0.1",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "@types/jest": "^27.0.1",
@@ -74,6 +74,7 @@
     "eslint": "^8.9.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-react": "^7.28.0",
+    "jest-styled-components": "^7.0.8",
     "prettier": "2.5.1",
     "redux-saga-test-plan": "^4.0.4",
     "stylelint": "^14.5.0",

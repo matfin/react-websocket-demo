@@ -43,7 +43,9 @@ export const colours: Colours = {
   primary: '#000',
   secondary: '#fff',
   tertiary: '#8090a0',
-  cta: '#ff5833',
+  success: '#00ab66',
+  warning: '#ff5833',
+  error: '#ed4337',
 };
 
 export const boxShadow = css`

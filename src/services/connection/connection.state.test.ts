@@ -1,5 +1,6 @@
 import { CombinedAppState } from '../../store.types';
 import { ConnectionState } from './connection.state.types';
+import { BannerType } from '../notification-banner/banner.state.types';
 import connectionState from './connection.state';
 
 describe('connection state', (): void => {
@@ -158,6 +159,10 @@ describe('connection state', (): void => {
         error: null,
         socket: null,
       },
+      banner: {
+        type: BannerType.SUCCESS,
+        isShowing: false
+      }
     };
 
     it('getSocket', (): void => {
