@@ -6,7 +6,7 @@ import IsinList from './views/isin-list';
 import IsinSearch from './views/isin-search';
 import { Plus } from './components/svg';
 
-import { BrandLogo, Container, Header, Nav, Main, SearchButton } from './App.css'
+import { BrandLogo, Container, Header, Nav, Main, SearchButton, NotificationBanner } from './App.css'
 
 export const App = () => {
   return (
@@ -22,6 +22,7 @@ export const App = () => {
             </SearchButton>
           </Nav>
         </Header>
+        <NotificationBanner />
         <Main>
           <Routes>
             <Route path="/" element={<IsinList />} />

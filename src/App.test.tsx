@@ -7,6 +7,11 @@ jest.mock('react-router-dom', () => ({
   Route: (): JSX.Element => <div />,
 }));
 
+jest.mock('./components/notification-banner', () => ({
+  __esModule: true,
+  default: (): JSX.Element => <div />
+}));
+
 describe('App', (): void => {
   afterAll((): void => {
     jest.clearAllMocks();

@@ -1,6 +1,7 @@
 import isins from '../../assets/isins.json';
 
 import { CombinedAppState } from '../../store.types';
+import { BannerType } from '../notification-banner/banner.state.types';
 import searchState, { handleUpdateSearchTerm } from './search.state';
 import { Company, SearchAction, SearchState } from './search.state.types';
 
@@ -126,6 +127,10 @@ describe('search state', (): void => {
         connected: false,
         error: null,
         socket: null,
+      },
+      banner: {
+        type: BannerType.SUCCESS,
+        isShowing: false
       }
     };
 

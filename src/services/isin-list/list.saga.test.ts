@@ -5,6 +5,7 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 import { CombinedAppState } from '../../store.types';
 
 import listState from './list.state';
+import { BannerType } from '../notification-banner/banner.state.types';
 import { Instrument } from './list.state.types';
 import { Company } from '../isin-search/search.state.types';
 import connectionState from '../connection/connection.state';
@@ -23,6 +24,10 @@ const mockState: CombinedAppState = {
     error: null,
     socket: null,
   },
+  banner: {
+    type: BannerType.SUCCESS,
+    isShowing: false
+  }
 };
 
 const company: Company = {

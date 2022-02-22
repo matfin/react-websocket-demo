@@ -6,6 +6,7 @@ import { CombinedAppState } from '../../store.types';
 
 import connectionState from './connection.state';
 import rootSaga, { openSocket, closeSocket } from './connection.saga';
+import { BannerType } from '../notification-banner/banner.state.types';
 
 const mockState: CombinedAppState = {
   search: {
@@ -20,6 +21,10 @@ const mockState: CombinedAppState = {
     error: null,
     socket: null,
   },
+  banner: {
+    type: BannerType.SUCCESS,
+    isShowing: false
+  }
 };
 
 const dummySocket: WebSocket = {

@@ -2,6 +2,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import { colours, fonts, fontWeights } from './styles/vars';
+import Banner from './components/notification-banner';
 import { Logo } from './components/svg';
 
 export const Container = styled.div`
@@ -9,11 +10,18 @@ export const Container = styled.div`
   display: grid;
   width: 100vw;
   min-height: 100vh;
-  grid: 3.5rem auto / auto;
+  grid: 3.5rem 2rem auto / auto;
   grid-template-areas:
     'header'
+    'banner'
     'main';
 `;
+
+export const NotificationBanner = styled(Banner)`
+  grid-area: banner;
+  height: 2rem;
+  padding: 0.5rem;
+`
 
 export const Header = styled.header`
   position: fixed;
