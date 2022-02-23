@@ -37,7 +37,6 @@ const instruments: Instrument[] = [
 ];
 
 const defaultProps: Props = {
-  openConnection: jest.fn(),
   unsubscribe: jest.fn(),
   instruments,
 };
@@ -45,14 +44,6 @@ const defaultProps: Props = {
 describe('<List />', (): void => {
   it('renders the component', (): void => {
     expect(() => render(<List {...defaultProps} />)).not.toThrow();
-  });
-
-  it('calls to open a connection on mount', (): void => {
-    const spyOpenConnection = jest.fn();
-    
-    render(<List {...defaultProps} openConnection={spyOpenConnection} />);
-
-    expect(spyOpenConnection).toHaveBeenCalledTimes(1);
   });
 
   it('calls to unsubscribe on press delete', async (): Promise<void> => {

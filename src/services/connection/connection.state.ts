@@ -9,6 +9,8 @@ const OPEN_CONNECTION_FAILURE = `${REDUCER_NAME}/OPEN_CONNECTION_FAILURE`;
 const CLOSE_CONNECTION_REQUEST = `${REDUCER_NAME}/CLOSE_CONNECTION_REQUEST`;
 const CLOSE_CONNECTION_SUCCESS = `${REDUCER_NAME}/CLOSE_CONNECTION_SUCCESS`;
 const CLOSE_CONNECTION_FAILURE = `${REDUCER_NAME}/CLOSE_CONNECTION_FAILURE`;
+const CONNECTION_OFFLINE = `${REDUCER_NAME}/CONNECTION_OFFLINE`;
+const CONNECTION_ONLINE = `${REDUCER_NAME}/CONNECTION_ONLINE`;
 
 /** Actions */
 const openConnectionRequest = (): ConnectionAction => ({
@@ -42,6 +44,14 @@ const closeConnectionFailure = (error: Error): ConnectionAction => ({
   payload: {
     error,
   },
+});
+
+const connectionOffline = (): ConnectionAction => ({
+  type: CONNECTION_OFFLINE
+})
+
+const connectionOnline = (): ConnectionAction => ({
+  type: CONNECTION_ONLINE
 });
 
 /** Reducer */
@@ -83,6 +93,18 @@ const reducer = (
         error: payload!.error!,
       };
     }
+    case CONNECTION_OFFLINE: {
+      return {
+        ...state,
+        connected: false,
+      }
+    }
+    case CONNECTION_ONLINE: {
+      return {
+        ...state,
+        connected: true
+      }
+    }
     default:
       return state;
   }
@@ -117,6 +139,8 @@ const connectionState = {
     CLOSE_CONNECTION_REQUEST,
     CLOSE_CONNECTION_SUCCESS,
     CLOSE_CONNECTION_FAILURE,
+    CONNECTION_OFFLINE,
+    CONNECTION_ONLINE,
   },
   selectors: {
     getSocket,
@@ -130,6 +154,8 @@ const connectionState = {
     closeConnectionRequest,
     closeConnectionSuccess,
     closeConnectionFailure,
+    connectionOffline,
+    connectionOnline,
   },
 };
 

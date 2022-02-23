@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import { CombinedAppState } from '../../store.types';
 import ListState from '../../services/isin-list/list.state';
-import ConnectionState from '../../services/connection/connection.state';
 import { Instrument } from '../../services/isin-list/list.state.types';
 
 import {
@@ -14,17 +13,12 @@ import {
 } from './list.css';
 
 export interface Props {
-  openConnection: () => void;
   unsubscribe: (instrument: Instrument) => void;
   instruments: Instrument[];
 }
 
-export const List = ({ openConnection, unsubscribe, instruments }: Props): JSX.Element => {
+export const List = ({ unsubscribe, instruments }: Props): JSX.Element => {
   const shouldShowNoInstruments: boolean = instruments.length === 0;
-
-  useEffect((): void => {
-    openConnection();
-  }, []);
 
   return (
     <Container>
@@ -56,7 +50,6 @@ const mapStateToProps = (store: CombinedAppState) => ({
 });
 
 const mapDispatchToProps = {
-  openConnection: ConnectionState.actions.openConnectionRequest,
   unsubscribe: ListState.actions.unsubscribe,
   reset: ListState.actions.reset,
 };
