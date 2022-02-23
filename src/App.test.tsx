@@ -1,5 +1,5 @@
 import React, { render } from '@testing-library/react';
-import App from './App';
+import { App, Props } from './App';
 
 jest.mock('react-router-dom', () => ({
   Link: (): JSX.Element => <a />,
@@ -9,8 +9,12 @@ jest.mock('react-router-dom', () => ({
 
 jest.mock('./components/notification-banner', () => ({
   __esModule: true,
-  default: (): JSX.Element => <div />
+  default: (): JSX.Element => <div />,
 }));
+
+const defaultProps: Props = {
+  openConnection: jest.fn(),
+};
 
 describe('App', (): void => {
   afterAll((): void => {
@@ -18,6 +22,14 @@ describe('App', (): void => {
   });
 
   it('renders without error', (): void => {
-    expect(() => render(<App />)).not.toThrow();
+    expect(() => render(<App {...defaultProps} />)).not.toThrow();
+  });
+
+  it('calls to open a connection on mount', (): void => {
+    const spyOpenConnection = jest.fn();
+
+    render(<App openConnection={spyOpenConnection} />);
+
+    expect(spyOpenConnection).toHaveBeenCalledTimes(1);
   });
 });

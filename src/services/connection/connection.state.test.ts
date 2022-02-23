@@ -69,6 +69,18 @@ describe('connection state', (): void => {
         }
       );
     });
+
+    it('returns the correct payload for CONNECTION_OFFLINE', (): void => {
+      expect(connectionState.actions.connectionOffline()).toEqual({
+        type: connectionState.types.CONNECTION_OFFLINE
+      });
+    });
+
+    it('returns the correct payload for CONNECTION_ONLINE', (): void => {
+      expect(connectionState.actions.connectionOnline()).toEqual({
+        type: connectionState.types.CONNECTION_ONLINE
+      });
+    });
   });
 
   describe('reducer', (): void => {
@@ -132,6 +144,32 @@ describe('connection state', (): void => {
         connectionState.actions.closeConnectionFailure(dummyError),
       );
       
+      expect(result).toEqual(expected);
+    });
+
+    it('sets the state with CONNECTION_OFFLINE', (): void => {
+      const expected: ConnectionState = {
+        ...dummyState,
+        connected: false,
+      };
+      const result: ConnectionState = connectionState.reducer(
+        dummyState,
+        connectionState.actions.connectionOffline()
+      );
+
+      expect(result).toEqual(expected);
+    });
+
+    it('sets the state with CONNECTION_ONLINE', (): void => {
+      const expected: ConnectionState = {
+        ...dummyState,
+        connected: true,
+      };
+      const result: ConnectionState = connectionState.reducer(
+        dummyState,
+        connectionState.actions.connectionOnline()
+      );
+
       expect(result).toEqual(expected);
     });
 

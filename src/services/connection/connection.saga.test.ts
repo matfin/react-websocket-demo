@@ -5,8 +5,9 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import { CombinedAppState } from '../../store.types';
 
 import connectionState from './connection.state';
-import rootSaga, { openSocket, closeSocket } from './connection.saga';
+import rootSaga, { openSocket, closeSocket, monitorConnection } from './connection.saga';
 import { BannerType } from '../notification-banner/banner.state.types';
+import bannerState from '../notification-banner/banner.state';
 
 const mockState: CombinedAppState = {
   search: {
@@ -37,7 +38,7 @@ describe('connection saga', (): void => {
     it('should establish a connection if there is none', async (): Promise<void> => {
       await expectSaga(rootSaga)
         .withState(mockState)
-        .select(connectionState.selectors.getIsConnected)
+        .select(connectionState.selectors.getSocket)
         .provide([
           [call(openSocket, 'ws://159.89.15.214:8080/'), dummySocket]
         ])
@@ -50,7 +51,7 @@ describe('connection saga', (): void => {
       await expectSaga(rootSaga)
         .withState(mockState)
         .provide([
-          [select(connectionState.selectors.getIsConnected), true]
+          [select(connectionState.selectors.getSocket), true]
         ])
         .dispatch(connectionState.actions.openConnectionRequest())
         .silentRun();
@@ -62,10 +63,40 @@ describe('connection saga', (): void => {
       await expectSaga(rootSaga)
         .withState(mockState)
         .provide([
-          [select(connectionState.selectors.getIsConnected), throwError(dummyError)]
+          [select(connectionState.selectors.getSocket), throwError(dummyError)]
         ])
         .put(connectionState.actions.openConnectionFailure(dummyError))
+        .put(bannerState.actions.showBanner('Connection failed', BannerType.ERROR))
         .dispatch(connectionState.actions.openConnectionRequest())
+        .silentRun();
+    });
+  });
+
+  describe('establishConnectionSuccess', (): void => {
+    it('should show a success message and monitor the network on connection success', async (): Promise<void> => {
+      await expectSaga(rootSaga)
+        .withState(mockState)
+        .call(monitorConnection)
+        .put(bannerState.actions.showBanner('Connected successfully', BannerType.SUCCESS))
+        .dispatch(connectionState.actions.openConnectionSuccess({} as WebSocket))
+        .silentRun();
+    });
+  });
+
+  describe('connectionLost / connectionRegained', (): void => {
+    it('should show an error banner with a message when the connection is lost', async (): Promise<void> => {
+      await expectSaga(rootSaga)
+        .withState(mockState)
+        .put(bannerState.actions.showBanner('Connection lost. You are offline!', BannerType.ERROR, 4000))
+        .dispatch(connectionState.actions.connectionOffline())
+        .silentRun();
+    });
+
+    it('should show a success banner with a message when the connection is regained', async (): Promise<void> => {
+      await expectSaga(rootSaga)
+        .withState(mockState)
+        .put(bannerState.actions.showBanner('Connection regained. You are back online!', BannerType.SUCCESS))
+        .dispatch(connectionState.actions.connectionOnline())
         .silentRun();
     });
   });

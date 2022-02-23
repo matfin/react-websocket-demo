@@ -21,7 +21,7 @@ import bannerState from '../notification-banner/banner.state';
 export function subscribe(
   socket: WebSocket,
   company: Company
-): EventChannel<unknown> {
+): EventChannel<unknown> | null {
   return eventChannel((emit) => {
     const onMessage = ({ data }: { data: unknown }): void => {
       const stockData: StockData = JSON.parse(data as string);
