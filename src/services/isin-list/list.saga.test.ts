@@ -23,6 +23,7 @@ const mockState: CombinedAppState = {
     connected: false,
     error: null,
     socket: null,
+    listening: false,
   },
   banner: {
     type: BannerType.SUCCESS,
@@ -34,6 +35,7 @@ const company: Company = {
   name: 'Saga',
   shortName: 'SAG',
   isin: 'SAG123',
+  bookmarked: false,
 }
 
 const instrument: Instrument = {
@@ -56,6 +58,11 @@ const dummySocket: WebSocket = {
 } as unknown as WebSocket;
 
 describe('list saga', (): void => {
+  afterEach((): void => {
+    spySend.mockClear();
+    spyAddEventListener.mockClear();
+  });
+
   it('handleUnsubscribeInstrument', async (): Promise<void> => {
     await expectSaga(rootSaga)
       .withState(mockState)
@@ -63,10 +70,35 @@ describe('list saga', (): void => {
         [select(connectionState.selectors.getSocket), dummySocket],
         [matchers.call.fn(delay), null]
       ])
-      .put(listState.actions.removeInstrument(instrument))
-      .dispatch(listState.actions.unsubscribe(instrument))
+      .put(listState.actions.removeInstrument(company))
+      .dispatch(listState.actions.unsubscribe(company))
       .silentRun();
     
+    expect(spySend).toHaveBeenCalledTimes(1);
+    expect(spySend).toHaveBeenCalledWith(JSON.stringify({ unsubscribe: 'SAG123' }));
+  });
+
+  it('handleUnsubscribeAllInstruments', async (): Promise<void> => {
+    await expectSaga(rootSaga)
+      .withState({
+        ...mockState,
+        list: {
+          instruments: {
+            ['SAG123']: {
+              ...instrument,
+              subscribed: true
+            }
+          }
+        }
+      })
+      .provide([
+        [select(connectionState.selectors.getSocket), dummySocket]
+      ])
+      .select(listState.selectors.getSubscribedInstrumentIsins)
+      .put(listState.actions.updateInstrumentSubscriptions(false))
+      .dispatch(listState.actions.unsubscribeAll())
+      .silentRun();
+
     expect(spySend).toHaveBeenCalledTimes(1);
     expect(spySend).toHaveBeenCalledWith(JSON.stringify({ unsubscribe: 'SAG123' }));
   });
@@ -80,5 +112,27 @@ describe('list saga', (): void => {
       // .call(subscribe, dummySocket, company) TODO: fix
       .dispatch(listState.actions.addInstrument(company))
       .silentRun();
+  });
+
+  it('handleResubscribeAllInstruments', async (): Promise<void> => {
+    await expectSaga(rootSaga)
+      .withState({
+        ...mockState,
+        list: {
+          instruments: {
+            ['SAG123']: instrument
+          }
+        }
+      })
+      .provide([
+        [select(connectionState.selectors.getSocket), dummySocket],
+      ])
+      .select(listState.selectors.getUnsubscribedInstrumentIsins)
+      .put(listState.actions.updateInstrumentSubscriptions(true))
+      .dispatch(listState.actions.resubscribeAll())
+      .silentRun();
+
+    expect(spySend).toHaveBeenCalledTimes(1);
+    expect(spySend).toHaveBeenCalledWith(JSON.stringify({ subscribe: 'SAG123' }));
   });
 });

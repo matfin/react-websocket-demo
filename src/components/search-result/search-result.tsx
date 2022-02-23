@@ -6,14 +6,13 @@ import { BookmarkIcon, BookmarkFilledIcon, Container, CompanyDetails, Title } fr
 export interface Props {
   className?: string;
   company: Company;
-  isSubscribed: boolean;
-  onPress?: (company: Company) => void;
+  onPress: (company: Company) => void;
 }
 
-const SearchResult = ({ className, company, isSubscribed, onPress }: Props): JSX.Element => {
+const SearchResult = ({ className, company, onPress }: Props): JSX.Element => {
   const handleOnClick = useCallback((): void => {
-    !isSubscribed && onPress && onPress(company);
-  }, [company, isSubscribed]);
+    onPress(company);
+  }, [company]);
 
   return (
     <Container className={className} onClick={handleOnClick} role="button">
@@ -23,7 +22,7 @@ const SearchResult = ({ className, company, isSubscribed, onPress }: Props): JSX
       <CompanyDetails>
         {company.isin} / {company.shortName}
       </CompanyDetails>
-      {isSubscribed ? (
+      {company.bookmarked ? (
         <BookmarkFilledIcon />
       ) : (
         <BookmarkIcon />

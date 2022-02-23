@@ -2,6 +2,7 @@ export interface Company {
   name: string;
   shortName: string;
   isin: string;
+  bookmarked: boolean;
 }
 
 export interface Payload {

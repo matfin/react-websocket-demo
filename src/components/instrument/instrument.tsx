@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 
 import { formattedCurrency } from '../../utils';
 
+import { Company } from '../../services/isin-search/search.state.types';
 import { Instrument } from '../../services/isin-list/list.state.types';
 import {
   Container,
@@ -18,7 +19,7 @@ export interface Props {
   className?: string;
   role?: string;
   instrument: Instrument;
-  onPressDelete: (instrument: Instrument) => void;
+  onPressDelete: (company: Company) => void;
 }
 
 const InstrumentTile = ({ className, role, instrument, onPressDelete }: Props): JSX.Element => {
@@ -27,7 +28,7 @@ const InstrumentTile = ({ className, role, instrument, onPressDelete }: Props): 
     stockData,
   } = instrument;
 
-  const handlePressDelete = useCallback((): void => onPressDelete(instrument), []);
+  const handlePressDelete = useCallback((): void => onPressDelete(instrument.company), []);
 
   return (
     <Container role={role} className={className} onClick={handlePressDelete}>

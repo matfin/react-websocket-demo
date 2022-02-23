@@ -1,15 +1,14 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 
-import { Instrument } from '../../services/isin-list/list.state.types';
 import { Company } from '../../services/isin-search/search.state.types';
 import { Search, Props } from './search';
 
 const defaultProps: Props = {
   companies: [],
-  subscribedInstruments: [],
   searchTerm: '',
   addInstrument: jest.fn(),
+  unsubscribe: jest.fn(),
   reset: jest.fn(),
   updateSearchTerm: jest.fn(),
 };
@@ -43,49 +42,72 @@ describe('<Search />', (): void => {
     });
   });
 
-  it('adds an instrument on click', async (): Promise<void> => {
-    const spyAddInstrument = jest.fn();
-    const company: Company = {
-      name: 'Test',
-      shortName: 'TST',
-      isin: 'IE123',
-    };
-    const { getByRole } = render(
-      <Search
-        {...defaultProps}
-        addInstrument={spyAddInstrument}
-        companies={[company]}
-      />
-    );
-    const resultItem = getByRole('button');
+  describe('adding and removing instruments', (): void => {
+    it('adds an instrument on click if it has not already been added', async (): Promise<void> => {
+      const spyAddInstrument = jest.fn();
+      const spyUnsubscribe = jest.fn();
+      const company: Company = {
+        name: 'Test',
+        shortName: 'TST',
+        isin: 'IE123',
+        bookmarked: false,
+      };
+      const { getByRole } = render(
+        <Search
+          {...defaultProps}
+          addInstrument={spyAddInstrument}
+          unsubscribe={spyUnsubscribe}
+          companies={[company]}
+        />
+      );
+      const resultItem = getByRole('button');
+  
+      fireEvent.click(resultItem);
+  
+      await waitFor((): void => {
+        expect(spyAddInstrument).toHaveBeenCalledTimes(1);
+        expect(spyAddInstrument).toBeCalledWith(company);
+        expect(spyUnsubscribe).not.toHaveBeenCalled();
+      });
+    });
 
-    fireEvent.click(resultItem);
+    it('removes an instrument on click if it has already been added', async (): Promise<void> => {
+      const spyAddInstrument = jest.fn();
+      const spyUnsubscribe = jest.fn();
+      const company: Company = {
+        name: 'Test',
+        shortName: 'TST',
+        isin: 'IE123',
+        bookmarked: true,
+      };
+      const { getByRole } = render(
+        <Search
+          {...defaultProps}
+          addInstrument={spyAddInstrument}
+          unsubscribe={spyUnsubscribe}
+          companies={[company]}
+        />
+      );
+      const resultItem = getByRole('button');
 
-    await waitFor((): void => {
-      expect(spyAddInstrument).toHaveBeenCalledTimes(1);
-      expect(spyAddInstrument).toBeCalledWith(company);
+      fireEvent.click(resultItem);
+
+      await waitFor((): void => {
+        expect(spyUnsubscribe).toHaveBeenCalledTimes(1);
+        expect(spyUnsubscribe).toHaveBeenCalledWith(company);
+        expect(spyAddInstrument).not.toHaveBeenCalled();
+      });
     });
   });
 
   describe('rendering results', (): void => {
     it('renders a list of search results', (): void => {
       const companies: Company[] = [
-        { name: 'Test One', shortName: 'ONE', isin: 'IE123' },
+        { name: 'Test One', shortName: 'ONE', isin: 'IE123', bookmarked: false },
       ];
-      const subscribedInstrument: Instrument = {
-        company: companies[0],
-        subscribed: true,
-        stockData: {
-          ask: 1.0,
-          bid: 1.1,
-          price: 1.2,
-          isin: 'IE123',
-        },
-      };
       const { getByText } = render(
         <Search
           {...defaultProps}
-          subscribedInstruments={[subscribedInstrument]}
           companies={companies}
           searchTerm="test"
         />

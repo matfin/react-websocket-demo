@@ -5,7 +5,7 @@ import { BannerType } from '../notification-banner/banner.state.types';
 import listState, {
   handleAddInstrument,
   handleRemoveInstrument,
-  handleUpdateInstrument,
+  handleUpdateInstrumentStockData,
 } from './list.state';
 
 describe('list state', (): void => {
@@ -16,6 +16,7 @@ describe('list state', (): void => {
     name: 'Test Company',
     shortName: 'TST',
     isin: 'IE123456',
+    bookmarked: false,
   };
   const instrument: Instrument = {
     company,
@@ -43,19 +44,40 @@ describe('list state', (): void => {
     });
 
     it('returns the correct payload for removeInstrument', (): void => {
-      expect(listState.actions.removeInstrument(instrument)).toEqual({
+      expect(listState.actions.removeInstrument(company)).toEqual({
         type: listState.types.REMOVE_INSTRUMENT,
         payload: {
-          instrument,
+          company,
         },
       });
     });
 
     it('returns the correct payload for unsubscribe', (): void => {
-      expect(listState.actions.unsubscribe(instrument)).toEqual({
+      expect(listState.actions.unsubscribe(company)).toEqual({
         type: listState.types.UNSUBSCRIBE_REQUEST,
         payload: {
-          instrument,
+          company,
+        },
+      });
+    });
+
+    it('returns the correct payload for unsubscribeAll', (): void => {
+      expect(listState.actions.unsubscribeAll()).toEqual({
+        type: listState.types.UNSUBSCRIBE_ALL_REQUEST,
+      });
+    });
+
+    it('returns the correct payload for resubscribeAll', (): void => {
+      expect(listState.actions.resubscribeAll()).toEqual({
+        type: listState.types.RESUBSCRIBE_ALL_REQUEST,
+      });
+    });
+
+    it('returns the correct state for updateInstrumentSubscriptions', (): void => {
+      expect(listState.actions.updateInstrumentSubscriptions(true)).toEqual({
+        type: listState.types.UPDATE_INSTRUMENT_SUBSCRIPTIONS,
+        payload: {
+          subscribed: true,
         },
       });
     });
@@ -93,7 +115,10 @@ describe('list state', (): void => {
         stateWithInstrument,
         listState.actions.updateInstrument(stockData)
       );
-      const expected: ListState = handleUpdateInstrument(stateWithInstrument, stockData);
+      const expected: ListState = handleUpdateInstrumentStockData(
+        stateWithInstrument,
+        stockData
+      );
 
       expect(result).toEqual(expected);
     });
@@ -107,12 +132,39 @@ describe('list state', (): void => {
       };
       const result: ListState = listState.reducer(
         stateWithInstrument,
-        listState.actions.removeInstrument(instrument)
+        listState.actions.removeInstrument(company)
       );
       const expected: ListState = dummyState;
 
       expect(result).toEqual(expected);
     });
+
+    it('sets the state with UPDATE_INSTRUMENT_SUBSCRIPTIONS', (): void => {
+      const stateWithSubscribedInstrument: ListState = {
+        ...dummyState,
+        instruments: {
+          ['IE123456']: {
+            ...instrument,
+            subscribed: true,
+          },
+        },
+      };
+      const result: ListState = listState.reducer(
+        stateWithSubscribedInstrument,
+        listState.actions.updateInstrumentSubscriptions(false)
+      );
+      const expected: ListState = {
+        ...dummyState,
+        instruments: {
+          ['IE123456']: {
+            ...instrument,
+            subscribed: false,
+          }
+        }
+      };
+
+      expect(result).toEqual(expected);
+    })
 
     it('sets the state with RESET', (): void => {
       const expected: ListState = dummyState;
@@ -135,14 +187,14 @@ describe('list state', (): void => {
   });
 
   describe('reducer utils', (): void => {
-    it('handleUpdateInstrument', (): void => {
+    it('handleUpdateInstrumentStockData', (): void => {
       const dummyStateWithInstrument: ListState = {
         ...dummyState,
         instruments: {
           ['IE123456']: instrument,
         },
       };
-      const result: ListState = handleUpdateInstrument(
+      const result: ListState = handleUpdateInstrumentStockData(
         dummyStateWithInstrument,
         stockData
       );
@@ -178,7 +230,7 @@ describe('list state', (): void => {
               ['IE123456']: instrument,
             },
           },
-          instrument
+          company
         )
       ).toEqual(dummyState);
     });
@@ -199,16 +251,23 @@ describe('list state', (): void => {
         connected: false,
         error: null,
         socket: null,
+        listening: false,
       },
       banner: {
         type: BannerType.SUCCESS,
-        isShowing: false
-      }
+        isShowing: false,
+      },
     };
 
     it('getInstruments', (): void => {
       expect(listState.selectors.getInstruments(appState)).toEqual([
         instrument,
+      ]);
+    });
+
+    it('getInstrumentIsins', (): void => {
+      expect(listState.selectors.getInstrumentIsins(appState)).toEqual([
+        'IE123456',
       ]);
     });
   });

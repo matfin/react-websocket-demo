@@ -11,6 +11,7 @@ const instruments: Instrument[] = [
       name: 'Test',
       shortName: 'TST',
       isin: 'IE123',
+      bookmarked: false,
     },
     stockData: {
       ask: 1.0,
@@ -25,6 +26,7 @@ const instruments: Instrument[] = [
       name: 'Other',
       shortName: 'OTH',
       isin: 'IE456',
+      bookmarked: false,
     },
     stockData: {
       ask: 2.0,
@@ -38,12 +40,25 @@ const instruments: Instrument[] = [
 
 const defaultProps: Props = {
   unsubscribe: jest.fn(),
+  unsubscribeAll: jest.fn(),
+  resubscribeAll: jest.fn(),
   instruments,
 };
 
 describe('<List />', (): void => {
   it('renders the component', (): void => {
     expect(() => render(<List {...defaultProps} />)).not.toThrow();
+  });
+
+  it('resubscribes and unsubscribes instrument feeds on mount / unmount', (): void => {
+    const spyResubscribeAll = jest.fn();
+    const spyUnsubscribeAll = jest.fn();
+    const { unmount } = render(<List {...defaultProps} unsubscribeAll={spyUnsubscribeAll} resubscribeAll={spyResubscribeAll} />);
+
+    unmount();
+
+    expect(spyResubscribeAll).toHaveBeenCalledTimes(1);
+    expect(spyUnsubscribeAll).toHaveBeenCalledTimes(1);
   });
 
   it('calls to unsubscribe on press delete', async (): Promise<void> => {
@@ -55,7 +70,7 @@ describe('<List />', (): void => {
 
     await waitFor((): void => {
       expect(spyUnsubscribe).toHaveBeenCalledTimes(1);
-      expect(spyUnsubscribe).toHaveBeenCalledWith(instruments[0]);
+      expect(spyUnsubscribe).toHaveBeenCalledWith(instruments[0].company);
     });
   });
 

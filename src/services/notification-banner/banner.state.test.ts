@@ -91,6 +91,7 @@ describe('banner state', (): void => {
         connected: false,
         error: null,
         socket: null,
+        listening: false,
       },
       banner: {
         type: BannerType.SUCCESS,
