@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState, memo } from 'react';
 import { connect } from 'react-redux';
 
 import { CombinedAppState } from '../../store.types';
 import SearchState from '../../services/isin-search/search.state';
-import { Company } from '../../services/isin-search/search.state.types';
 import ListState from '../../services/isin-list/list.state';
-import { Instrument } from '../../services/isin-list/list.state.types';
+import { Company } from '../../services/isin-search/search.state.types';
+import { Props as SearchResultProps } from '../../components/search-result/search-result';
 
 import {
   Container,
@@ -18,30 +18,39 @@ import {
 
 export interface Props {
   companies: Company[];
-  subscribedInstruments: Instrument[];
   searchTerm: string | undefined;
 
   reset: () => void;
   addInstrument: (company: Company) => void;
+  unsubscribe: (company: Company) => void;
   updateSearchTerm: (searchTerm: string) => void;
 }
 
+const MemoResultItem = memo(
+  (props: SearchResultProps): JSX.Element => <ResultItem {...props} />
+);
+
+MemoResultItem.displayName = 'SearchResult';
+
 export const Search = ({
   companies,
-  subscribedInstruments,
   searchTerm,
   addInstrument,
+  unsubscribe,
   reset,
   updateSearchTerm,
 }: Props): JSX.Element => {
-  const shouldShowNoResults = companies.length === 0;
-  const subscribedInstrumentIsins: string[] = subscribedInstruments.map(
-    ({ company }: Instrument): string => company.isin
-  );
+  const [shouldShowNoResults, setShouldShowNoResults] = useState<boolean>(false);
 
   useEffect((): (() => void) => {
     return (): void => reset();
   }, []);
+
+  useEffect((): void => {
+    const hasNoCompanies: boolean = companies.length === 0;
+
+    setShouldShowNoResults(hasNoCompanies);
+  }, [companies]);
 
   const onSearchInputChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>): void => {
@@ -54,9 +63,16 @@ export const Search = ({
     []
   );
 
-  const handleResultItemClick = useCallback((company: Company): void => {
-    addInstrument(company);
-  }, []);
+  const handleResultItemClick = useCallback(
+    (company: Company): void => {
+      if (company.bookmarked) {
+        unsubscribe(company);
+      } else {
+        addInstrument(company);
+      }
+    },
+    []
+  );
 
   return (
     <Container>
@@ -73,16 +89,11 @@ export const Search = ({
       ) : (
         <ResultsList>
           {companies.map((company: Company): JSX.Element => {
-            const isSubscribed: boolean = subscribedInstrumentIsins.includes(
-              company.isin
-            );
-
             return (
-              <ResultItem
+              <MemoResultItem
                 onPress={handleResultItemClick}
                 key={company.isin}
                 company={company}
-                isSubscribed={isSubscribed}
               />
             );
           })}
@@ -93,13 +104,13 @@ export const Search = ({
 };
 
 /* istanbul ignore next */
-const mapStateToProps = (store: CombinedAppState) => ({
-  subscribedInstruments: ListState.selectors.getInstruments(store),
-  companies: SearchState.selectors.getCompanies(store),
-  searchTerm: SearchState.selectors.getSearchTerm(store),
+const mapStateToProps = (state: CombinedAppState) => ({
+  companies: SearchState.selectors.getCompanies(state),
+  searchTerm: SearchState.selectors.getSearchTerm(state),
 });
 
 const mapDispatchToProps = {
+  unsubscribe: ListState.actions.unsubscribe,
   addInstrument: ListState.actions.addInstrument,
   updateSearchTerm: SearchState.actions.updateSearchTerm,
   reset: SearchState.actions.reset,

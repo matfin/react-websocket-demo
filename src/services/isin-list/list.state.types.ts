@@ -17,10 +17,11 @@ export interface Payload {
   company?: Company;
   instrument?: Instrument;
   stockData?: StockData;
+  subscribed?: boolean;
 }
 
 export interface Instruments {
-  [index: string]: Instrument
+  [index: string]: Instrument;
 }
 
 export interface ListAction {
@@ -29,5 +30,6 @@ export interface ListAction {
 }
 
 export interface ListState {
-  instruments: Instruments
+  instruments: Instruments;
+  counter?: number;
 }

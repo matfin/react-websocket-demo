@@ -1,3 +1,5 @@
+import { createSelector } from '@reduxjs/toolkit';
+
 import { ConnectionAction, ConnectionState } from './connection.state.types';
 
 const REDUCER_NAME = `connection`;
@@ -9,6 +11,7 @@ const OPEN_CONNECTION_FAILURE = `${REDUCER_NAME}/OPEN_CONNECTION_FAILURE`;
 const CLOSE_CONNECTION_REQUEST = `${REDUCER_NAME}/CLOSE_CONNECTION_REQUEST`;
 const CLOSE_CONNECTION_SUCCESS = `${REDUCER_NAME}/CLOSE_CONNECTION_SUCCESS`;
 const CLOSE_CONNECTION_FAILURE = `${REDUCER_NAME}/CLOSE_CONNECTION_FAILURE`;
+const SET_IS_LISTENING = `${REDUCER_NAME}/SET_IS_LISTENING`;
 const CONNECTION_OFFLINE = `${REDUCER_NAME}/CONNECTION_OFFLINE`;
 const CONNECTION_ONLINE = `${REDUCER_NAME}/CONNECTION_ONLINE`;
 
@@ -47,11 +50,18 @@ const closeConnectionFailure = (error: Error): ConnectionAction => ({
 });
 
 const connectionOffline = (): ConnectionAction => ({
-  type: CONNECTION_OFFLINE
-})
+  type: CONNECTION_OFFLINE,
+});
 
 const connectionOnline = (): ConnectionAction => ({
-  type: CONNECTION_ONLINE
+  type: CONNECTION_ONLINE,
+});
+
+const setIsListening = (listening: boolean): ConnectionAction => ({
+  type: SET_IS_LISTENING,
+  payload: {
+    listening,
+  },
 });
 
 /** Reducer */
@@ -59,6 +69,7 @@ const initialState: ConnectionState = {
   error: null,
   socket: null,
   connected: false,
+  listening: false,
 };
 
 const reducer = (
@@ -97,13 +108,19 @@ const reducer = (
       return {
         ...state,
         connected: false,
-      }
+      };
     }
     case CONNECTION_ONLINE: {
       return {
         ...state,
-        connected: true
-      }
+        connected: true,
+      };
+    }
+    case SET_IS_LISTENING: {
+      return {
+        ...state,
+        listening: payload!.listening!
+      };
     }
     default:
       return state;
@@ -111,23 +128,49 @@ const reducer = (
 };
 
 /** Selectors */
-const getSocket = ({
-  connection,
+const errorSelector = ({
+  connection: { error },
 }: {
   connection: ConnectionState;
-}): WebSocket | null => connection.socket;
+}): Error | null => error;
 
-const getIsConnected = ({
-  connection,
+const socketSelector = ({
+  connection: { socket },
 }: {
   connection: ConnectionState;
-}): boolean => connection.connected;
+}): WebSocket | null => socket;
 
-const getError = ({
-  connection,
+const connectedSelector = ({
+  connection: { connected },
 }: {
   connection: ConnectionState;
-}): Error | null => connection.error;
+}): boolean => connected;
+
+const listeningSelector = ({
+  connection: { listening },
+}: {
+  connection: ConnectionState
+}): boolean => listening
+
+const selectError = createSelector(
+  errorSelector,
+  (error: Error | null): Error | null => error
+);
+
+const selectSocket = createSelector(
+  socketSelector,
+  (socket: WebSocket | null): WebSocket | null => socket
+);
+
+const selectIsConnected = createSelector(
+  connectedSelector,
+  (connected: boolean): boolean => connected
+);
+
+const selectIsListening = createSelector(
+  listeningSelector,
+  (listening: boolean): boolean => listening
+);
 
 const connectionState = {
   name: REDUCER_NAME,
@@ -139,13 +182,15 @@ const connectionState = {
     CLOSE_CONNECTION_REQUEST,
     CLOSE_CONNECTION_SUCCESS,
     CLOSE_CONNECTION_FAILURE,
+    SET_IS_LISTENING,
     CONNECTION_OFFLINE,
     CONNECTION_ONLINE,
   },
   selectors: {
-    getSocket,
-    getIsConnected,
-    getError,
+    getSocket: selectSocket,
+    getIsConnected: selectIsConnected,
+    getError: selectError,
+    getIsListening: selectIsListening,
   },
   actions: {
     openConnectionRequest,
@@ -154,6 +199,7 @@ const connectionState = {
     closeConnectionRequest,
     closeConnectionSuccess,
     closeConnectionFailure,
+    setIsListening,
     connectionOffline,
     connectionOnline,
   },

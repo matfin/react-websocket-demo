@@ -1,4 +1,7 @@
+import { createSelector } from '@reduxjs/toolkit';
+
 import isins from '../../assets/isins.json';
+import listState from '../isin-list/list.state';
 
 import { Company, SearchAction, SearchState } from './search.state.types';
 
@@ -20,11 +23,10 @@ const reset = (): SearchAction => ({
   type: RESET,
 });
 
-
 /** Initial state */
 const initialState: SearchState = {
   searchTerm: '',
-  companies: (isins as Company[]),
+  companies: isins as Company[],
 };
 
 /** Reducer */
@@ -36,7 +38,10 @@ const reducer = (
 
   switch (type) {
     case UPDATE_SEARCH_TERM: {
-      return handleUpdateSearchTerm(state, payload!.searchTerm!);
+      return {
+        ...state,
+        searchTerm: payload!.searchTerm!,
+      };
     }
     case RESET:
       return initialState;
@@ -45,30 +50,44 @@ const reducer = (
   }
 };
 
-/** Redux state update utilities */
-export const handleUpdateSearchTerm = (
-  state: SearchState,
-  searchTerm: string
-): SearchState => {
-  const searchEmpty = searchTerm.length === 0;
-  const companies = (isins as Company[]);
-  const filteredCompanies: Company[] = companies.filter(({ name, shortName }: Company): boolean =>
-    name.toLowerCase().includes(searchTerm.toLocaleLowerCase()) || shortName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  return {
-    ...state,
-    companies: searchEmpty ? companies : filteredCompanies,
-    searchTerm,
-  };
-};
-
 /** Selectors */
-const getSearchTerm = ({ search }: { search: SearchState }): string =>
-  search.searchTerm;
+const searchTermSelector = ({
+  search: { searchTerm },
+}: {
+  search: SearchState;
+}): string => searchTerm;
 
-const getCompanies = ({ search }: { search: SearchState }): Company[] =>
-  search.companies;
+const companiesSelector = ({
+  search: { companies },
+}: {
+  search: SearchState;
+}): Company[] => companies;
+
+const selectFilteredCompanies = createSelector(
+  [
+    companiesSelector,
+    searchTermSelector,
+    listState.selectors.getInstrumentIsins,
+  ],
+  (companies: Company[], searchTerm: string, isins: string[]): Company[] =>
+    companies
+      .filter(
+        ({ name, shortName }: Company): boolean =>
+          name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase()) ||
+          shortName.toLowerCase().includes(searchTerm.toLocaleLowerCase())
+      )
+      .map(
+        (company: Company): Company => ({
+          ...company,
+          bookmarked: isins.includes(company.isin),
+        })
+      )
+);
+
+const selectSearchTerm = createSelector(
+  searchTermSelector,
+  (searchTerm: string): string => searchTerm
+);
 
 const searchState = {
   name: REDUCER_NAME,
@@ -78,8 +97,8 @@ const searchState = {
     RESET,
   },
   selectors: {
-    getCompanies,
-    getSearchTerm,
+    getCompanies: selectFilteredCompanies,
+    getSearchTerm: selectSearchTerm,
   },
   actions: {
     reset,

@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { CombinedAppState } from '../../store.types';
 import ListState from '../../services/isin-list/list.state';
+import { Company } from '../../services/isin-search/search.state.types';
 import { Instrument } from '../../services/isin-list/list.state.types';
+import { Props as InstrumentTileProps } from '../../components/instrument/instrument';
 
 import {
   Container,
@@ -13,12 +15,31 @@ import {
 } from './list.css';
 
 export interface Props {
-  unsubscribe: (instrument: Instrument) => void;
+  unsubscribe: (company: Company) => void;
+  unsubscribeAll: () => void;
+  resubscribeAll: () => void;
   instruments: Instrument[];
 }
 
-export const List = ({ unsubscribe, instruments }: Props): JSX.Element => {
+const MemoInstrumentItem = memo(
+  (props: InstrumentTileProps): JSX.Element => <InstrumentItem {...props} />
+);
+
+MemoInstrumentItem.displayName = 'InstrumentTile';
+
+export const List = ({
+  unsubscribe,
+  unsubscribeAll,
+  resubscribeAll,
+  instruments,
+}: Props): JSX.Element => {
   const shouldShowNoInstruments: boolean = instruments.length === 0;
+
+  useEffect((): (() => void) => {
+    resubscribeAll();
+
+    return (): void => unsubscribeAll();
+  }, []);
 
   return (
     <Container>
@@ -30,7 +51,7 @@ export const List = ({ unsubscribe, instruments }: Props): JSX.Element => {
         <InstrumentTileList>
           {instruments.map(
             (instrument: Instrument): JSX.Element => (
-              <InstrumentItem
+              <MemoInstrumentItem
                 role="instrument"
                 key={instrument.company.isin}
                 instrument={instrument}
@@ -51,6 +72,8 @@ const mapStateToProps = (store: CombinedAppState) => ({
 
 const mapDispatchToProps = {
   unsubscribe: ListState.actions.unsubscribe,
+  unsubscribeAll: ListState.actions.unsubscribeAll,
+  resubscribeAll: ListState.actions.resubscribeAll,
   reset: ListState.actions.reset,
 };
 

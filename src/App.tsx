@@ -26,7 +26,7 @@ export const App = ({ openConnection }: Props) => {
   useEffect((): void => {
     openConnection();
   }, []);
-
+  
   return (
     <>
       <Container>

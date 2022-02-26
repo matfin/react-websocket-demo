@@ -1,15 +1,19 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 
+import { Company } from '../../services/isin-search/search.state.types';
 import InstrumentTile, { Props } from './instrument';
+
+const company: Company = {
+  isin: 'TEST123',
+  name: 'Test Company',
+  shortName: 'TST',
+  bookmarked: false,
+};
 
 const defaultProps: Props = {
   instrument: {
-    company: {
-      isin: 'TEST123',
-      name: 'Test Company',
-      shortName: 'TST',
-    },
+    company,
     stockData: {
       isin: 'TEST123',
       bid: 1.0,
@@ -45,6 +49,7 @@ describe('<InstrumentTile />', (): void => {
 
     await waitFor((): void => {
       expect(spyOnPressDelete).toHaveBeenCalledTimes(1);
+      expect(spyOnPressDelete).toHaveBeenCalledWith(company)
     });
   });
 });

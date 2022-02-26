@@ -2,7 +2,7 @@ import isins from '../../assets/isins.json';
 
 import { CombinedAppState } from '../../store.types';
 import { BannerType } from '../notification-banner/banner.state.types';
-import searchState, { handleUpdateSearchTerm } from './search.state';
+import searchState from './search.state';
 import { Company, SearchAction, SearchState } from './search.state.types';
 
 describe('search state', (): void => {
@@ -27,18 +27,7 @@ describe('search state', (): void => {
     it('sets the state with UPDATE_SEARCH_TERM', (): void => {
       const dummyState: SearchState = {
         searchTerm: '',
-        companies: [
-          {
-            name: 'Company Einz',
-            shortName: 'EIN',
-            isin: 'DE123456',
-          },
-          {
-            name: 'Comhlacht a Haon',
-            shortName: 'COM',
-            isin: 'IE78910',
-          },
-        ],
+        companies: [],
       };
       const result: SearchState = searchState.reducer(
         dummyState,
@@ -82,38 +71,11 @@ describe('search state', (): void => {
     });
   });
 
-  describe('reducer utils', (): void => {
-    const searchState: SearchState = {
-      companies: [],
-      searchTerm: '',
-    };
-
-    it('handleUpdateSearchTerm with empty search term', (): void => {
-      expect(handleUpdateSearchTerm(searchState, '')).toEqual({
-        ...searchState,
-        companies: isins as Company[],
-      });
-    });
-
-    it('handleUpdateSearchTerm with a search term', (): void => {
-      expect(handleUpdateSearchTerm(searchState, 'fox')).toEqual({
-        searchTerm: 'fox',
-        companies: [
-          {
-            name: 'Foxconn',
-            shortName: 'FXCOF',
-            isin: 'TW0002354008',
-          },
-        ],
-      });
-    });
-  });
-
   describe('selectors', (): void => {
     const searchTerm = 'Test search term';
     const companies: Company[] = [
-      { name: 'Company one', shortName: 'ONE', isin: 'IE1' },
-      { name: 'Company two', shortName: 'TWO', isin: 'IE2' },
+      { name: 'Company one', shortName: 'ONE', isin: 'IE1', bookmarked: false },
+      { name: 'Company two', shortName: 'TWO', isin: 'IE2', bookmarked: false },
     ];
     const appState: CombinedAppState = {
       search: {
@@ -127,6 +89,7 @@ describe('search state', (): void => {
         connected: false,
         error: null,
         socket: null,
+        listening: false,
       },
       banner: {
         type: BannerType.SUCCESS,
@@ -139,7 +102,13 @@ describe('search state', (): void => {
     });
 
     it('getCompanies', (): void => {
-      expect(searchState.selectors.getCompanies(appState)).toEqual(companies);
+      expect(searchState.selectors.getCompanies({
+        ...appState,
+        search: {
+          companies,
+          searchTerm: 'one'
+        }
+      })).toEqual([companies[0]]);
     });
   });
 });

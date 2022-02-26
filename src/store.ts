@@ -15,11 +15,14 @@ const rootReducer: Reducer<CombinedAppState, ReduxAction> = combineReducers({
   list: listState.reducer
 });
 
-const sagaMiddleware: SagaMiddleware = createSagaMiddleware();
+export const createClientStore = (): Store => {
+  const sagaMiddleware: SagaMiddleware = createSagaMiddleware();
+  const store: Store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
 
-const store: Store = createStore(rootReducer, applyMiddleware(sagaMiddleware));
+  sagaMiddleware.run(rootSaga);
 
-sagaMiddleware.run(rootSaga);
+  return store;
+};
 
-export default store;
+export default createClientStore;
 

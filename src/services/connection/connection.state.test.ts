@@ -8,6 +8,7 @@ describe('connection state', (): void => {
     error: null,
     socket: null,
     connected: false,
+    listening: false,
   };
 
   describe('actions', (): void => {
@@ -60,25 +61,34 @@ describe('connection state', (): void => {
     it('returns the correct payload for closeConnectionFailure', (): void => {
       const dummyError: Error = new Error('oops');
 
-      expect(connectionState.actions.closeConnectionFailure(dummyError)).toEqual(
-        {
-          type: connectionState.types.CLOSE_CONNECTION_FAILURE,
-          payload: {
-            error: dummyError,
-          },
-        }
-      );
+      expect(
+        connectionState.actions.closeConnectionFailure(dummyError)
+      ).toEqual({
+        type: connectionState.types.CLOSE_CONNECTION_FAILURE,
+        payload: {
+          error: dummyError,
+        },
+      });
     });
 
     it('returns the correct payload for CONNECTION_OFFLINE', (): void => {
       expect(connectionState.actions.connectionOffline()).toEqual({
-        type: connectionState.types.CONNECTION_OFFLINE
+        type: connectionState.types.CONNECTION_OFFLINE,
       });
     });
 
     it('returns the correct payload for CONNECTION_ONLINE', (): void => {
       expect(connectionState.actions.connectionOnline()).toEqual({
-        type: connectionState.types.CONNECTION_ONLINE
+        type: connectionState.types.CONNECTION_ONLINE,
+      });
+    });
+
+    it('returns the correct payload for SET_IS_LISTENING', (): void => {
+      expect(connectionState.actions.setIsListening(true)).toEqual({
+        type: connectionState.types.SET_IS_LISTENING,
+        payload: {
+          listening: true,
+        },
       });
     });
   });
@@ -141,9 +151,9 @@ describe('connection state', (): void => {
       };
       const result: ConnectionState = connectionState.reducer(
         dummyState,
-        connectionState.actions.closeConnectionFailure(dummyError),
+        connectionState.actions.closeConnectionFailure(dummyError)
       );
-      
+
       expect(result).toEqual(expected);
     });
 
@@ -173,6 +183,19 @@ describe('connection state', (): void => {
       expect(result).toEqual(expected);
     });
 
+    it('sets the state with SET_IS_LISTENING', (): void => {
+      const expected: ConnectionState = {
+        ...dummyState,
+        listening: true,
+      };
+      const result: ConnectionState = connectionState.reducer(
+        dummyState,
+        connectionState.actions.setIsListening(true)
+      );
+
+      expect(result).toEqual(expected);
+    });
+
     it('returns the default state with no type match', (): void => {
       const expected: ConnectionState = dummyState;
       const result: ConnectionState = connectionState.reducer(undefined, {
@@ -196,11 +219,12 @@ describe('connection state', (): void => {
         connected: false,
         error: null,
         socket: null,
+        listening: false,
       },
       banner: {
         type: BannerType.SUCCESS,
-        isShowing: false
-      }
+        isShowing: false,
+      },
     };
 
     it('getSocket', (): void => {
@@ -213,6 +237,10 @@ describe('connection state', (): void => {
 
     it('getError', (): void => {
       expect(connectionState.selectors.getError(appState)).toBeNull();
+    });
+
+    it('getIsListening', (): void => {
+      expect(connectionState.selectors.getIsListening(appState)).toEqual(false);
     });
   });
 });
