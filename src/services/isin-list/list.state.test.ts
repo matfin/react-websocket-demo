@@ -104,23 +104,52 @@ describe('list state', (): void => {
       expect(result).toEqual(expected);
     });
 
-    it('sets the state with UPDATE_INSTRUMENT', (): void => {
-      const stateWithInstrument: ListState = {
-        ...dummyState,
-        instruments: {
-          ['IE123456']: instrument,
-        },
-      };
-      const result: ListState = listState.reducer(
-        stateWithInstrument,
-        listState.actions.updateInstrument(stockData)
-      );
-      const expected: ListState = handleUpdateInstrumentStockData(
-        stateWithInstrument,
-        stockData
-      );
+    describe('updating instrument', (): void => {
+      it('sets the state with UPDATE_INSTRUMENT', (): void => {
+        const stateWithInstrument: ListState = {
+          ...dummyState,
+          instruments: {
+            ['IE123456']: instrument,
+          },
+        };
+        const result: ListState = listState.reducer(
+          stateWithInstrument,
+          listState.actions.updateInstrument(stockData)
+        );
+        const expected: ListState = handleUpdateInstrumentStockData(
+          stateWithInstrument,
+          stockData
+        );
+  
+        expect(result).toEqual(expected);
+      });
 
-      expect(result).toEqual(expected);
+      it('sets the state with UPDATE_INSTRUMENT when the instrument does not exist', (): void => {
+        const stateWithInstrument: ListState = {
+          ...dummyState,
+          instruments: {
+            ['IE123456']: instrument,
+          },
+        };
+        const result: ListState = listState.reducer(
+          stateWithInstrument,
+          listState.actions.updateInstrument({
+            ...stockData,
+            isin: 'IE7891011',
+          })
+        );
+        const expected: ListState = handleUpdateInstrumentStockData(
+          stateWithInstrument,
+          {
+            bid: 0,
+            ask: 0,
+            price: 0,
+            isin: 'IE7891011',
+          }
+        );
+
+        expect(result).toEqual(expected);
+      });
     });
 
     it('sets the state with REMOVE_INSTRUMENT', (): void => {
