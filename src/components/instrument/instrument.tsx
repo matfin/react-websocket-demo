@@ -11,6 +11,8 @@ import {
   CompanyMetadata,
   PriceInfo,
   PriceItem,
+  PriceItemLabel,
+  Price,
   DeleteButton,
   DeleteIcon,
 } from './instrument.css';
@@ -42,13 +44,28 @@ const InstrumentTile = ({ className, role, instrument, onPressDelete }: Props): 
       </CompanyInfo>
       <PriceInfo>
         <PriceItem>
-          Bid {formattedCurrency(stockData.bid)}
+          <PriceItemLabel>
+            Bid
+          </PriceItemLabel>
+          <Price>
+            {formattedCurrency(stockData.bid)}
+          </Price>
         </PriceItem>
         <PriceItem>
-          Ask {formattedCurrency(stockData.ask)}
+          <PriceItemLabel>
+            Ask
+          </PriceItemLabel>
+          <Price>
+            {formattedCurrency(stockData.ask)}
+          </Price>
         </PriceItem>
         <PriceItem>
-          Price {formattedCurrency(stockData.price)}
+          <PriceItemLabel>
+            Price
+          </PriceItemLabel>
+          <Price>
+            {formattedCurrency(stockData.price)}
+          </Price>
         </PriceItem>
         <DeleteButton data-testid={`delete-instrument-${instrument.company.isin}`}>
           <DeleteIcon />
