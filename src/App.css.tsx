@@ -29,12 +29,22 @@ export const Header = styled.header`
   background-color: ${colours.secondary};
 `;
 
-export const SearchButton = styled(Link)`
+
+export const Nav = styled.nav`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row;
+  height: 3.5rem;
+  padding: 0 1rem;
+`;
+
+export const NavButton = styled(Link)`
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 0 0.5rem;
-  height: 2rem;
+  height: 2.25rem;
   color: ${colours.secondary};
   background-color: ${colours.primary};
   font-weight: ${fontWeights.strong};
@@ -48,12 +58,14 @@ export const SearchButton = styled(Link)`
   }
 `;
 
-export const Nav = styled.nav`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 3.5rem;
-  padding: 0 1rem;
+export const ListButton = styled(NavButton)`
+  margin-left: auto;
+  margin-right: 1rem;
+
+  svg {
+    width: 0.8rem;
+    height: 0.8rem;
+  }
 `;
 
 export const BrandLogo = styled(Logo)`

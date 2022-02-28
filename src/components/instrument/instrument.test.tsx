@@ -35,9 +35,9 @@ describe('<InstrumentTile />', (): void => {
 
     expect(getByText('Test Company')).not.toBeNull();
     expect(getByText('TST / TEST123')).not.toBeNull();
-    expect(getByText('Bid €1.00')).not.toBeNull();
-    expect(getByText('Ask €1.10')).not.toBeNull();
-    expect(getByText('Price €1.20')).not.toBeNull();
+    expect(getByText('€1.00')).not.toBeNull();
+    expect(getByText('€1.10')).not.toBeNull();
+    expect(getByText('€1.20')).not.toBeNull();
   });
 
   it('executes the correct callback on press delete', async (): Promise<void> => {

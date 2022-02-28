@@ -6,7 +6,7 @@ import { GlobalStyle } from './styles/global';
 import ConnectionState from './services/connection/connection.state';
 import IsinList from './views/isin-list';
 import IsinSearch from './views/isin-search';
-import { Plus } from './components/svg';
+import { BarChart, Plus } from './components/svg';
 
 import {
   BrandLogo,
@@ -14,7 +14,8 @@ import {
   Header,
   Nav,
   Main,
-  SearchButton,
+  NavButton,
+  ListButton,
   NotificationBanner,
 } from './App.css';
 
@@ -35,9 +36,12 @@ export const App = ({ openConnection }: Props) => {
             <Link to="/">
               <BrandLogo />
             </Link>
-            <SearchButton to="/search">
+            <ListButton to="/">
+              My list <BarChart fill="#fff" />
+            </ListButton>
+            <NavButton to="/search">
               Add <Plus fill="#fff" />
-            </SearchButton>
+            </NavButton>
           </Nav>
         </Header>
         <NotificationBanner />

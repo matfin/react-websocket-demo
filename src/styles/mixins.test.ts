@@ -44,7 +44,7 @@ describe('style mixins', (): void => {
   });
 
   it('font', (): void => {
-    const result = font({ lineHeight: 1.6, size: 1.2 }).join('');
+    const result = font({ lineHeight: 1.6, size: 1.2 });
 
     expect(result).toContain('font-size: 1.2rem;');
     expect(result).toContain('line-height: 1.6rem;');

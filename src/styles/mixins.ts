@@ -1,23 +1,23 @@
-import { css, FlattenSimpleInterpolation } from 'styled-components';
+import { FlattenSimpleInterpolation } from 'styled-components';
 
 import { Font } from './vars.types';
 import { breakpoints } from './vars';
 
 export const sizeQuery = (
   minWidth: number,
-  css: FlattenSimpleInterpolation
-): string => `@media (min-width: ${minWidth}px){${css}}`;
+  styling: FlattenSimpleInterpolation | string
+): string => `@media (min-width: ${minWidth}px){${styling}}`;
 
 export const media = {
-  sm: (css: FlattenSimpleInterpolation): string => sizeQuery(breakpoints.sm, css),
-  md: (css: FlattenSimpleInterpolation): string => sizeQuery(breakpoints.md, css),
-  lg: (css: FlattenSimpleInterpolation): string => sizeQuery(breakpoints.lg, css),
-  xl: (css: FlattenSimpleInterpolation): string => sizeQuery(breakpoints.xl, css),
-  xxl: (css: FlattenSimpleInterpolation): string => sizeQuery(breakpoints.xxl, css),
+  sm: (styling: FlattenSimpleInterpolation | string): string => sizeQuery(breakpoints.sm, styling),
+  md: (styling: FlattenSimpleInterpolation | string): string => sizeQuery(breakpoints.md, styling),
+  lg: (styling: FlattenSimpleInterpolation | string): string => sizeQuery(breakpoints.lg, styling),
+  xl: (styling: FlattenSimpleInterpolation | string): string => sizeQuery(breakpoints.xl, styling),
+  xxl: (styling: FlattenSimpleInterpolation | string): string => sizeQuery(breakpoints.xxl, styling),
 }
 
 
-export const font = ({ lineHeight, size }: Font) => css`
+export const font = ({ lineHeight, size }: Font) => `
   font-size: ${size}rem;
   line-height: ${lineHeight}rem;
 `;

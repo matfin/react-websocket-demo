@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { fonts } from '../../styles/vars';
+import { fonts, fontWeights } from '../../styles/vars';
 import { font } from '../../styles/mixins';
 import { Thrash } from '../svg';
 
@@ -32,8 +32,17 @@ export const PriceInfo = styled.ul`
 
 export const PriceItem = styled.li`
   flex: 1;
+  display: flex;
   ${font(fonts.xs)}
 `;
+
+export const PriceItemLabel = styled.span`
+  font-weight: ${fontWeights.strong};
+`;
+
+export const Price = styled.span`
+  margin-left: 1rem;
+`
 
 export const DeleteButton = styled.button`
   position: absolute;
