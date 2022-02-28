@@ -56,14 +56,14 @@ const unsubscribeAll = (): ListAction => ({
 });
 
 const resubscribeAll = (): ListAction => ({
-  type: RESUBSCRIBE_ALL_REQUEST
+  type: RESUBSCRIBE_ALL_REQUEST,
 });
 
 const updateInstrumentSubscriptions = (subscribed: boolean): ListAction => ({
   type: UPDATE_INSTRUMENT_SUBSCRIPTIONS,
   payload: {
-    subscribed
-  }
+    subscribed,
+  },
 });
 
 const reset = (): ListAction => ({
@@ -107,17 +107,25 @@ const reducer = (
 export const handleUpdateInstrumentStockData = (
   state: ListState,
   stockData: StockData
-): ListState => ({
-  ...state,
-  instruments: {
-    ...state.instruments,
-    [stockData.isin]: {
-      ...state.instruments[stockData.isin],
-      stockData,
-      subscribed: true,
-    },
-  },
-});
+): ListState => {
+  const instrumentExists = !!state.instruments[stockData.isin];
+
+  if (!instrumentExists) {
+    return state;
+  }
+
+  return {
+    ...state,
+    instruments: {
+      ...state.instruments,
+      [stockData.isin]: {
+        ...state.instruments[stockData.isin],
+        stockData,
+        subscribed: true,
+      }
+    }
+  }
+}
 
 export const handleUpdateInstrumentsSubscribed = (
   state: ListState,
@@ -125,18 +133,20 @@ export const handleUpdateInstrumentsSubscribed = (
 ): ListState => {
   const { instruments } = state;
   const unsubscribed: Instruments = Object.values(instruments)
-    .map((instrument: Instrument): Instrument => ({ ...instrument, subscribed }))
-    .reduce((acc: Instruments, curr: Instrument ): Instruments => {
+    .map(
+      (instrument: Instrument): Instrument => ({ ...instrument, subscribed })
+    )
+    .reduce((acc: Instruments, curr: Instrument): Instruments => {
       return {
         ...acc,
-        [curr.company.isin]: curr
-      } 
+        [curr.company.isin]: curr,
+      };
     }, {});
-  
+
   return {
     ...state,
-    instruments: unsubscribed
-  }
+    instruments: unsubscribed,
+  };
 };
 
 export const handleAddInstrument = (
@@ -165,13 +175,15 @@ export const handleAddInstrument = (
 
 export const handleRemoveInstrument = (
   state: ListState,
-  company: Company
+  { isin }: Company
 ): ListState => {
-  delete state.instruments[company.isin];
+  const newInstruments: Instruments = { ...state.instruments };
+
+  delete newInstruments[isin];
 
   return {
     ...state,
-    instruments: { ...state.instruments },
+    instruments: newInstruments,
   };
 };
 

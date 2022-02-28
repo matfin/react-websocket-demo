@@ -112,7 +112,7 @@ function* handleOnInstrumentAdded(action: ListAction): Generator<unknown> {
 
   while (true) {
     const action = yield take(channel as EventChannel<unknown>);
-  
+
     yield put(action as ListAction);
   }
 }
