@@ -1,6 +1,8 @@
 import { all, call, select, put, takeLatest, take } from 'redux-saga/effects';
 import { eventChannel, EventChannel } from 'redux-saga';
 
+import Config from '../../config';
+
 import bannerState from '../notification-banner/banner.state';
 import { BannerType } from '../notification-banner/banner.state.types';
 import connectionState from './connection.state';
@@ -62,7 +64,7 @@ export function* connectionRegained(): Generator<unknown> {
 
 export function* establishConnection(): Generator<unknown> {
   try {
-    const uri = 'ws://159.89.15.214:8080/';
+    const uri = Config.wsUri;
     const hasSocket = yield select(
       connectionState.selectors.getSocket
     );
