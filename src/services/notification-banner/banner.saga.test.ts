@@ -1,29 +1,10 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { CombinedAppState } from '../../store.types';
 import { BannerType } from '../notification-banner/banner.state.types';
 import bannerState from './banner.state';
 import rootSaga from './banner.saga';
 
-const mockState: CombinedAppState = {
-  search: {
-    companies: [],
-    searchTerm: '',
-  },
-  list: {
-    instruments: {},
-  },
-  connection: {
-    connected: false,
-    error: null,
-    socket: null,
-    listening: false,
-  },
-  banner: {
-    type: BannerType.SUCCESS,
-    isShowing: false
-  }
-};
+import mockState from '../../mocks/mockState';
 
 describe('banner saga', (): void => {
   it('should handle showing then hiding the banner', async (): Promise<void> => {

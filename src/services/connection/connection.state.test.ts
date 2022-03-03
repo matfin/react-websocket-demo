@@ -1,7 +1,6 @@
-import { CombinedAppState } from '../../store.types';
 import { ConnectionState } from './connection.state.types';
-import { BannerType } from '../notification-banner/banner.state.types';
 import connectionState from './connection.state';
+import mockState from '../../mocks/mockState';
 
 describe('connection state', (): void => {
   const dummyState: ConnectionState = {
@@ -207,40 +206,20 @@ describe('connection state', (): void => {
   });
 
   describe('selectors', (): void => {
-    const appState: CombinedAppState = {
-      search: {
-        companies: [],
-        searchTerm: '',
-      },
-      list: {
-        instruments: {},
-      },
-      connection: {
-        connected: false,
-        error: null,
-        socket: null,
-        listening: false,
-      },
-      banner: {
-        type: BannerType.SUCCESS,
-        isShowing: false,
-      },
-    };
-
     it('getSocket', (): void => {
-      expect(connectionState.selectors.getSocket(appState)).toBeNull();
+      expect(connectionState.selectors.getSocket(mockState)).toBeNull();
     });
 
     it('getIsConnected', (): void => {
-      expect(connectionState.selectors.getIsConnected(appState)).toEqual(false);
+      expect(connectionState.selectors.getIsConnected(mockState)).toEqual(false);
     });
 
     it('getError', (): void => {
-      expect(connectionState.selectors.getError(appState)).toBeNull();
+      expect(connectionState.selectors.getError(mockState)).toBeNull();
     });
 
     it('getIsListening', (): void => {
-      expect(connectionState.selectors.getIsListening(appState)).toEqual(false);
+      expect(connectionState.selectors.getIsListening(mockState)).toEqual(false);
     });
   });
 });

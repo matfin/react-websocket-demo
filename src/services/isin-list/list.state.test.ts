@@ -1,7 +1,7 @@
 import { CombinedAppState } from '../../store.types';
 import { Company } from '../isin-search/search.state.types';
 import { Instrument, ListState, StockData } from './list.state.types';
-import { BannerType } from '../notification-banner/banner.state.types';
+import mockState from '../../mocks/mockState';
 import listState, {
   handleAddInstrument,
   handleRemoveInstrument,
@@ -267,24 +267,11 @@ describe('list state', (): void => {
 
   describe('selectors', (): void => {
     const appState: CombinedAppState = {
-      search: {
-        companies: [],
-        searchTerm: '',
-      },
+      ...mockState,
       list: {
         instruments: {
           ['IE123456']: instrument,
         },
-      },
-      connection: {
-        connected: false,
-        error: null,
-        socket: null,
-        listening: false,
-      },
-      banner: {
-        type: BannerType.SUCCESS,
-        isShowing: false,
       },
     };
 
