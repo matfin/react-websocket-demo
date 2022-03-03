@@ -1,9 +1,10 @@
 import isins from '../../assets/isins.json';
 
 import { CombinedAppState } from '../../store.types';
-import { BannerType } from '../notification-banner/banner.state.types';
 import searchState from './search.state';
 import { Company, SearchAction, SearchState } from './search.state.types';
+
+import mockState from '../../mocks/mockState';
 
 describe('search state', (): void => {
   describe('actions', (): void => {
@@ -78,23 +79,11 @@ describe('search state', (): void => {
       { name: 'Company two', shortName: 'TWO', isin: 'IE2', bookmarked: false },
     ];
     const appState: CombinedAppState = {
+      ...mockState,
       search: {
         companies,
         searchTerm,
       },
-      list: {
-        instruments: {},
-      },
-      connection: {
-        connected: false,
-        error: null,
-        socket: null,
-        listening: false,
-      },
-      banner: {
-        type: BannerType.SUCCESS,
-        isShowing: false
-      }
     };
 
     it('getSearchTerm', (): void => {
@@ -102,13 +91,15 @@ describe('search state', (): void => {
     });
 
     it('getCompanies', (): void => {
-      expect(searchState.selectors.getCompanies({
-        ...appState,
-        search: {
-          companies,
-          searchTerm: 'one'
-        }
-      })).toEqual([companies[0]]);
+      expect(
+        searchState.selectors.getCompanies({
+          ...appState,
+          search: {
+            companies,
+            searchTerm: 'one',
+          },
+        })
+      ).toEqual([companies[0]]);
     });
   });
 });

@@ -1,5 +1,6 @@
 import { CombinedAppState } from '../../store.types';
 import { BannerState, BannerType } from './banner.state.types';
+import mockState from '../../mocks/mockState';
 import bannerState from './banner.state';
 
 describe('banner state', (): void => {
@@ -80,19 +81,7 @@ describe('banner state', (): void => {
 
   describe('selectors', (): void => {
     const appState: CombinedAppState = {
-      search: {
-        companies: [],
-        searchTerm: ''
-      },
-      list: {
-        instruments: {},
-      },
-      connection: {
-        connected: false,
-        error: null,
-        socket: null,
-        listening: false,
-      },
+      ...mockState,
       banner: {
         type: BannerType.SUCCESS,
         isShowing: false,

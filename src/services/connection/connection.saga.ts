@@ -1,5 +1,5 @@
 import { all, call, select, put, takeLatest, take } from 'redux-saga/effects';
-import { eventChannel, EventChannel } from 'redux-saga';
+import { eventChannel, EventChannel, END } from 'redux-saga';
 
 import Config from '../../config';
 
@@ -25,23 +25,27 @@ export const closeSocket = (socket: WebSocket): Promise<void> =>
     socket.close();
   });
 
+export const eventChannelEmitter = (
+  emit: (action: ConnectionAction) => void
+) => {
+  const onOnline = (): void => emit(connectionState.actions.connectionOnline());
+  const onOffline = (): void =>
+    emit(connectionState.actions.connectionOffline());
+
+  window.addEventListener('offline', onOffline);
+  window.addEventListener('online', onOnline);
+
+  return (): void => {
+    window.removeEventListener('offline', onOffline);
+    window.removeEventListener('online', onOnline);
+    emit(END);
+  };
+};
+
 /* istanbul ignore next */
-export function monitorConnection(): EventChannel<unknown> {
-  return eventChannel((emit) => {
-    const onOnline = (): void =>
-      emit(connectionState.actions.connectionOnline());
-    const onOffline = (): void =>
-      emit(connectionState.actions.connectionOffline());
-
-    window.addEventListener('offline', onOffline);
-    window.addEventListener('online', onOnline);
-
-    return (): void => {
-      window.removeEventListener('offline', onOffline);
-      window.removeEventListener('online', onOnline);
-    };
-  });
-}
+export const monitorConnection = (): EventChannel<unknown> => {
+  return eventChannel(eventChannelEmitter);
+};
 
 export function* connectionLost(): Generator<unknown> {
   yield put(
@@ -65,10 +69,8 @@ export function* connectionRegained(): Generator<unknown> {
 export function* establishConnection(): Generator<unknown> {
   try {
     const uri = Config.wsUri;
-    const hasSocket = yield select(
-      connectionState.selectors.getSocket
-    );
-    
+    const hasSocket = yield select(connectionState.selectors.getSocket);
+
     if (!hasSocket) {
       const socket = yield call(openSocket, uri);
 
@@ -93,7 +95,7 @@ export function* establishConnectionSuccess(): Generator<unknown> {
 
   /* istanbul ignore next */
   while (true) {
-    const action = yield take(channel as EventChannel<unknown>);
+    const action = yield take(channel as EventChannel<ConnectionAction>);
 
     yield put(action as ConnectionAction);
   }

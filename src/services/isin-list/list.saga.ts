@@ -7,7 +7,7 @@ import {
   take,
   takeLatest,
 } from 'redux-saga/effects';
-import { eventChannel, EventChannel } from 'redux-saga';
+import { END, eventChannel, EventChannel } from 'redux-saga';
 
 import { Company } from '../isin-search/search.state.types';
 import { ListAction, StockData } from './list.state.types';
@@ -15,28 +15,38 @@ import { BannerType } from '../notification-banner/banner.state.types';
 import connectionState from '../connection/connection.state';
 import listState from './list.state';
 import bannerState from '../notification-banner/banner.state';
+import { ConnectionAction } from '../connection/connection.state.types';
+
+export const eventChannelEmitter = (
+  emit: (action: ListAction | ConnectionAction) => void,
+  socket: WebSocket,
+  company: Company
+) => {
+  const onMessage = ({ data }: { data: unknown }): void => {
+    const stockData: StockData = JSON.parse(data as string);
+
+    emit(listState.actions.updateInstrument(stockData));
+  };
+  const payload = JSON.stringify({ subscribe: company.isin });
+
+  socket.addEventListener('message', onMessage);
+  socket.send(payload);
+
+  return (): void => {
+    socket.removeEventListener('message', onMessage);
+    emit(connectionState.actions.setIsListening(false));
+    emit(END);
+  };
+};
 
 /* istanbul ignore next */
 export function subscribe(
   socket: WebSocket,
-  company: Company,
+  company: Company
 ): EventChannel<unknown> | null {
-  return eventChannel((emit) => {
-    const onMessage = ({ data }: { data: unknown }): void => {
-      const stockData: StockData = JSON.parse(data as string);
-
-      emit(listState.actions.updateInstrument(stockData));
-    };
-    const payload = JSON.stringify({ subscribe: company.isin });
-
-    socket.addEventListener('message', onMessage);
-    socket.send(payload);
-
-    return (): void => {
-      socket.removeEventListener('message', onMessage);
-      emit(connectionState.actions.setIsListening(false));
-    }
-  });
+  return eventChannel((emit: (action: ListAction | ConnectionAction) => void) =>
+    eventChannelEmitter(emit, socket, company)
+  );
 }
 
 function* handleUnsubscribeInstrument(action: ListAction): Generator<unknown> {
@@ -65,7 +75,7 @@ function* handleUnsubscribeAllInstruments(): Generator<unknown> {
   const payloads: string[] = (subscribedIsins as string[]).map(
     (isin: string): string => JSON.stringify({ unsubscribe: isin })
   );
-  
+
   try {
     yield all(
       payloads.map((payload: string): void =>
@@ -88,8 +98,10 @@ function* handleResubscribeAllInstruments(): Generator<unknown> {
 
   try {
     yield all(
-      payloads.map((payload: string): void => (socket as WebSocket).send(payload))
-    )
+      payloads.map((payload: string): void =>
+        (socket as WebSocket).send(payload)
+      )
+    );
   } finally {
     yield put(listState.actions.updateInstrumentSubscriptions(true));
   }
@@ -101,7 +113,7 @@ function* handleOnInstrumentAdded(action: ListAction): Generator<unknown> {
   const company: Company = action.payload!.company!;
   const channel = yield call(subscribe, socket as WebSocket, company);
 
-  yield put(connectionState.actions.setIsListening(true))
+  yield put(connectionState.actions.setIsListening(true));
   yield put(
     bannerState.actions.showBanner(
       'Subscription successful!',

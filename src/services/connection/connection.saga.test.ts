@@ -1,33 +1,15 @@
+import { END } from 'redux-saga'; 
 import { call, select } from 'redux-saga/effects';
-import { expectSaga } from 'redux-saga-test-plan';
+import { expectSaga} from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 
-import { CombinedAppState } from '../../store.types';
-
 import connectionState from './connection.state';
-import rootSaga, { openSocket, closeSocket, monitorConnection } from './connection.saga';
+import rootSaga, { openSocket, closeSocket, monitorConnection, eventChannelEmitter } from './connection.saga';
 import { BannerType } from '../notification-banner/banner.state.types';
 import bannerState from '../notification-banner/banner.state';
 
-const mockState: CombinedAppState = {
-  search: {
-    companies: [],
-    searchTerm: '',
-  },
-  list: {
-    instruments: {},
-  },
-  connection: {
-    connected: false,
-    error: null,
-    socket: null,
-    listening: false,
-  },
-  banner: {
-    type: BannerType.SUCCESS,
-    isShowing: false
-  }
-};
+import mockState from '../../mocks/mockState';
+import { waitFor } from '@testing-library/react';
 
 const dummySocket: WebSocket = {
   close: jest.fn(),
@@ -35,6 +17,52 @@ const dummySocket: WebSocket = {
 } as unknown as WebSocket;
 
 describe('connection saga', (): void => {
+  describe('eventChannelEmitter', (): void => {
+    it('adds the correct event listeners and calls END', (): void => {
+      jest.spyOn(window, 'addEventListener');
+      jest.spyOn(window, 'removeEventListener');
+      const spyEmit = jest.fn();
+
+      eventChannelEmitter(spyEmit)();
+      expect(window.addEventListener).toHaveBeenCalledTimes(2);
+      expect(window.addEventListener).toHaveBeenNthCalledWith(1, 'offline', expect.any(Function));
+      expect(window.addEventListener).toHaveBeenNthCalledWith(2, 'online', expect.any(Function));
+
+      expect(window.removeEventListener).toHaveBeenCalledTimes(2);
+      expect(window.removeEventListener).toHaveBeenNthCalledWith(1, 'offline', expect.any(Function));
+      expect(window.removeEventListener).toHaveBeenNthCalledWith(2, 'online', expect.any(Function));
+
+      expect(spyEmit).toHaveBeenCalledWith(END);
+
+      (window.addEventListener as jest.Mock).mockRestore();
+      (window.removeEventListener as jest.Mock).mockRestore();
+    });
+
+    it('emits the correct action on online event', async (): Promise<void> => {
+      const spyEmit = jest.fn();
+
+      eventChannelEmitter(spyEmit);
+      window.dispatchEvent(new Event('online'));
+
+      await waitFor((): void => {
+        expect(spyEmit).toHaveBeenCalledTimes(1);
+        expect(spyEmit).toHaveBeenCalledWith(connectionState.actions.connectionOnline());
+      });
+    });
+
+    it('emits the correct action on offline event', async (): Promise<void> => {
+      const spyEmit = jest.fn();
+
+      eventChannelEmitter(spyEmit);
+      window.dispatchEvent(new Event('offline'));
+
+      await waitFor((): void => {
+        expect(spyEmit).toHaveBeenCalledTimes(1);
+        expect(spyEmit).toHaveBeenCalledWith(connectionState.actions.connectionOffline());
+      });
+    });
+  });
+
   describe('establishConnection', (): void => {
     it('should establish a connection if there is none', async (): Promise<void> => {
       await expectSaga(rootSaga)
