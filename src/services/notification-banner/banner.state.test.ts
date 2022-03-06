@@ -1,6 +1,6 @@
-import { CombinedAppState } from '../../store.types';
+import { CombinedAppState } from 'store.types';
 import { BannerState, BannerType } from './banner.state.types';
-import mockState from '../../mocks/mockState';
+import mockState from 'mocks/mockState';
 import bannerState from './banner.state';
 
 describe('banner state', (): void => {

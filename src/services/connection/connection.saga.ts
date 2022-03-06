@@ -1,10 +1,10 @@
 import { all, call, select, put, takeLatest, take } from 'redux-saga/effects';
 import { eventChannel, EventChannel, END } from 'redux-saga';
 
-import Config from '../../config';
+import Config from 'config';
 
-import bannerState from '../notification-banner/banner.state';
-import { BannerType } from '../notification-banner/banner.state.types';
+import bannerState from 'services/notification-banner/banner.state';
+import { BannerType } from 'services/notification-banner/banner.state.types';
 import connectionState from './connection.state';
 import { ConnectionAction } from './connection.state.types';
 

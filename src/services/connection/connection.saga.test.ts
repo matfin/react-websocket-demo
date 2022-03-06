@@ -5,10 +5,10 @@ import { throwError } from 'redux-saga-test-plan/providers';
 
 import connectionState from './connection.state';
 import rootSaga, { openSocket, closeSocket, monitorConnection, eventChannelEmitter } from './connection.saga';
-import { BannerType } from '../notification-banner/banner.state.types';
-import bannerState from '../notification-banner/banner.state';
+import { BannerType } from 'services/notification-banner/banner.state.types';
+import bannerState from 'services/notification-banner/banner.state';
 
-import mockState from '../../mocks/mockState';
+import mockState from 'mocks/mockState';
 import { waitFor } from '@testing-library/react';
 
 const dummySocket: WebSocket = {

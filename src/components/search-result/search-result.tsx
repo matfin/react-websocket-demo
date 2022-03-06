@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 
-import { Company } from '../../services/isin-search/search.state.types';
+import { Company } from 'services/isin-search/search.state.types';
 import { BookmarkIcon, BookmarkFilledIcon, Container, CompanyDetails, Title } from './search-result.css';
 
 export interface Props {

@@ -1,7 +1,7 @@
 import { createSelector } from '@reduxjs/toolkit';
 
-import isins from '../../assets/isins.json';
-import listState from '../isin-list/list.state';
+import isins from 'assets/isins.json';
+import listState from 'services/isin-list/list.state';
 
 import { Company, SearchAction, SearchState } from './search.state.types';
 

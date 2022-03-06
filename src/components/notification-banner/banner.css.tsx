@@ -1,7 +1,7 @@
 import styled from 'styled-components';
-import { BannerType } from '../../services/notification-banner/banner.state.types';
-import { font } from '../../styles/mixins';
-import { colours, fonts } from '../../styles/vars';
+import { BannerType } from 'services/notification-banner/banner.state.types';
+import { font } from 'styles/mixins';
+import { colours, fonts } from 'styles/vars';
 
 interface ContainerProps {
   isShowing: boolean;

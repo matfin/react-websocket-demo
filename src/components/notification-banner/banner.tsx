@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { CombinedAppState } from '../../store.types';
-import bannerState from '../../services/notification-banner/banner.state';
-import { BannerType } from '../../services/notification-banner/banner.state.types';
+import { CombinedAppState } from 'store.types';
+import bannerState from 'services/notification-banner/banner.state';
+import { BannerType } from 'services/notification-banner/banner.state.types';
 import { Container, Message } from './banner.css';
 
 export interface Props {

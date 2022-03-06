@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
-import { fonts } from '../../styles/vars';
-import { font } from '../../styles/mixins';
+import { fonts } from 'styles/vars';
+import { font } from 'styles/mixins';
 
 import { Bookmark, BookmarkFilled } from '../svg';
 

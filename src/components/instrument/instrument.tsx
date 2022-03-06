@@ -1,9 +1,9 @@
 import React, { useCallback } from 'react';
 
-import { formattedCurrency } from '../../utils';
+import { formattedCurrency } from 'utils';
 
-import { Company } from '../../services/isin-search/search.state.types';
-import { Instrument } from '../../services/isin-list/list.state.types';
+import { Company } from 'services/isin-search/search.state.types';
+import { Instrument } from 'services/isin-list/list.state.types';
 import {
   Container,
   CompanyInfo,

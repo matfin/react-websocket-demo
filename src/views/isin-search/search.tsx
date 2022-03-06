@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState, memo } from 'react';
 import { connect } from 'react-redux';
 
-import { CombinedAppState } from '../../store.types';
-import SearchState from '../../services/isin-search/search.state';
-import ListState from '../../services/isin-list/list.state';
-import { Company } from '../../services/isin-search/search.state.types';
-import { Props as SearchResultProps } from '../../components/search-result/search-result';
+import { CombinedAppState } from 'store.types';
+import SearchState from 'services/isin-search/search.state';
+import ListState from 'services/isin-list/list.state';
+import { Company } from 'services/isin-search/search.state.types';
+import { Props as SearchResultProps } from 'components/search-result/search-result';
 
 import {
   Container,

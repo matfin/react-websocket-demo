@@ -1,7 +1,7 @@
 import { CombinedAppState } from '../../store.types';
-import { Company } from '../isin-search/search.state.types';
+import { Company } from 'services/isin-search/search.state.types';
 import { Instrument, ListState, StockData } from './list.state.types';
-import mockState from '../../mocks/mockState';
+import mockState from 'mocks/mockState';
 import listState, {
   handleAddInstrument,
   handleRemoveInstrument,

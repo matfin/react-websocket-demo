@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-import { boxShadow, colours, fonts } from '../../styles/vars';
-import { font } from '../../styles/mixins';
-import TextInput from '../../components/text-input';
-import SearchResult from '../../components/search-result';
+import { boxShadow, colours, fonts } from 'styles/vars';
+import { font } from 'styles/mixins';
+import TextInput from 'components/text-input';
+import SearchResult from 'components/search-result';
 
 export const Container = styled.div`
   display: grid;

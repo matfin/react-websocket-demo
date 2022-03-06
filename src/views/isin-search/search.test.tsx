@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 
-import { Company } from '../../services/isin-search/search.state.types';
+import { Company } from 'services/isin-search/search.state.types';
 import { Search, Props } from './search';
 
 const defaultProps: Props = {
