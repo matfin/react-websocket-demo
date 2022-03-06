@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, waitFor } from '@testing-library/react';
 
-import { Instrument } from '../../services/isin-list/list.state.types';
+import { Instrument } from 'services/isin-list/list.state.types';
 
 import { List, Props } from './list';
 

@@ -9,13 +9,13 @@ import {
 } from 'redux-saga/effects';
 import { END, eventChannel, EventChannel } from 'redux-saga';
 
-import { Company } from '../isin-search/search.state.types';
+import { Company } from 'services/isin-search/search.state.types';
 import { ListAction, StockData } from './list.state.types';
-import { BannerType } from '../notification-banner/banner.state.types';
-import connectionState from '../connection/connection.state';
+import { BannerType } from 'services/notification-banner/banner.state.types';
+import connectionState from 'services/connection/connection.state';
 import listState from './list.state';
-import bannerState from '../notification-banner/banner.state';
-import { ConnectionAction } from '../connection/connection.state.types';
+import bannerState from 'services/notification-banner/banner.state';
+import { ConnectionAction } from 'services/connection/connection.state.types';
 
 export const eventChannelEmitter = (
   emit: (action: ListAction | ConnectionAction) => void,

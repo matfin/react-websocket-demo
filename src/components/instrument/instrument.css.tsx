@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-import { fonts, fontWeights } from '../../styles/vars';
-import { font } from '../../styles/mixins';
-import { Thrash } from '../svg';
+import { fonts, fontWeights } from 'styles/vars';
+import { font } from 'styles/mixins';
+import { Thrash } from 'components/svg';
 
 export const Container = styled.li`
   position: relative;

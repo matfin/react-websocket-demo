@@ -1,10 +1,10 @@
 import { expectSaga } from 'redux-saga-test-plan';
 
-import { BannerType } from '../notification-banner/banner.state.types';
+import { BannerType } from 'services/notification-banner/banner.state.types';
 import bannerState from './banner.state';
 import rootSaga from './banner.saga';
 
-import mockState from '../../mocks/mockState';
+import mockState from 'mocks/mockState';
 
 describe('banner saga', (): void => {
   it('should handle showing then hiding the banner', async (): Promise<void> => {

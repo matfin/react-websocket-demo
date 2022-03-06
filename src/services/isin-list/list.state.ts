@@ -8,7 +8,7 @@ import {
   StockData,
 } from './list.state.types';
 
-import { Company } from '../isin-search/search.state.types';
+import { Company } from 'services/isin-search/search.state.types';
 
 const REDUCER_NAME = `list`;
 

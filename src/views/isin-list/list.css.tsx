@@ -1,10 +1,10 @@
 import styled, { css } from 'styled-components'
 
-import { boxShadow, fonts } from '../../styles/vars';
-import { font, media } from '../../styles/mixins';
+import { boxShadow, fonts } from 'styles/vars';
+import { font, media } from 'styles/mixins';
 
-import InstrumentTile from '../../components/instrument/instrument';
-import { CompanyMetadata, PriceInfo, PriceItem, Price } from '../../components/instrument/instrument.css';
+import InstrumentTile from 'components/instrument/instrument';
+import { CompanyMetadata, PriceInfo, PriceItem, Price } from 'components/instrument/instrument.css';
 
 export const Container = styled.div`
   display: grid;

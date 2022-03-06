@@ -1,6 +1,6 @@
 import { ConnectionState } from './connection.state.types';
 import connectionState from './connection.state';
-import mockState from '../../mocks/mockState';
+import mockState from 'mocks/mockState';
 
 describe('connection state', (): void => {
   const dummyState: ConnectionState = {

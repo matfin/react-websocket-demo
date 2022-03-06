@@ -1,5 +1,5 @@
-import { CombinedAppState } from '../store.types';
-import { BannerType } from '../services/notification-banner/banner.state.types';
+import { CombinedAppState } from 'store.types';
+import { BannerType } from 'services/notification-banner/banner.state.types';
 
 const mockState: CombinedAppState = {
   search: {

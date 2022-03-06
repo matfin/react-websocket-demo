@@ -2,7 +2,7 @@ import React from 'react';
 import 'jest-styled-components';
 import { render } from '@testing-library/react';
 
-import { BannerType } from '../../services/notification-banner/banner.state.types';
+import { BannerType } from 'services/notification-banner/banner.state.types';
 import { Banner, Props } from './banner';
 
 const defaultProps: Props = {

@@ -5,11 +5,11 @@ import * as matchers from 'redux-saga-test-plan/matchers';
 
 import listState from './list.state';
 import { Instrument, StockData } from './list.state.types';
-import { Company } from '../isin-search/search.state.types';
-import connectionState from '../connection/connection.state';
+import { Company } from 'services/isin-search/search.state.types';
+import connectionState from 'services/connection/connection.state';
 import rootSaga, { eventChannelEmitter } from './list.saga';
 
-import mockState from '../../mocks/mockState';
+import mockState from 'mocks/mockState';
 
 const company: Company = {
   name: 'Saga',

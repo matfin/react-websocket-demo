@@ -1,10 +1,10 @@
-import isins from '../../assets/isins.json';
+import isins from 'assets/isins.json';
 
-import { CombinedAppState } from '../../store.types';
+import { CombinedAppState } from 'store.types';
 import searchState from './search.state';
 import { Company, SearchAction, SearchState } from './search.state.types';
 
-import mockState from '../../mocks/mockState';
+import mockState from 'mocks/mockState';
 
 describe('search state', (): void => {
   describe('actions', (): void => {

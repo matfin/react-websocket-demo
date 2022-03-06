@@ -1,11 +1,11 @@
 import React, { memo, useEffect } from 'react';
 import { connect } from 'react-redux';
 
-import { CombinedAppState } from '../../store.types';
-import ListState from '../../services/isin-list/list.state';
-import { Company } from '../../services/isin-search/search.state.types';
-import { Instrument } from '../../services/isin-list/list.state.types';
-import { Props as InstrumentTileProps } from '../../components/instrument/instrument';
+import { CombinedAppState } from 'store.types';
+import ListState from 'services/isin-list/list.state';
+import { Company } from 'services/isin-search/search.state.types';
+import { Instrument } from 'services/isin-list/list.state.types';
+import { Props as InstrumentTileProps } from 'components/instrument/instrument';
 
 import {
   Container,
