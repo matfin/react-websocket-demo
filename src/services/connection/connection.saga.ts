@@ -2,28 +2,11 @@ import { all, call, select, put, takeLatest, take } from 'redux-saga/effects';
 import { eventChannel, EventChannel, END } from 'redux-saga';
 
 import Config from 'config';
-
+import { openSocket, closeSocket } from './socket';
 import bannerState from 'services/notification-banner/banner.state';
 import { BannerType } from 'services/notification-banner/banner.state.types';
 import connectionState from './connection.state';
 import { ConnectionAction } from './connection.state.types';
-
-/* istanbul ignore next */
-export const openSocket = (uri: string): Promise<WebSocket> =>
-  new Promise((resolve, reject): void => {
-    const socket: WebSocket = new WebSocket(uri);
-
-    socket.onopen = (): void => resolve(socket);
-    socket.onerror = (e: Event): void => reject(e);
-  });
-
-/* istanbul ignore next */
-export const closeSocket = (socket: WebSocket): Promise<void> =>
-  new Promise((resolve): void => {
-    socket.onclose = (): void => resolve();
-
-    socket.close();
-  });
 
 export const eventChannelEmitter = (
   emit: (action: ConnectionAction) => void

@@ -1,5 +1,5 @@
 const Config = {
-  wsUri: 'ws://159.89.15.214:8080/'
+  wsUri: 'ws://localhost:3001'
 }
 
 export default Config;

@@ -1,0 +1,20 @@
+{
+  "name": "react-websocket-server",
+  "version": "1.0.0",
+  "description": "Simple server for websocket connection",
+  "main": "index.js",
+  "author": "Matt Finucane",
+  "license": "MIT",
+  "scripts": {
+    "start": "ts-node index"
+  },
+  "dependencies": {
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.2",
+    "uuid": "^8.3.2",
+    "ws": "^8.5.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "^8.3.4"
+  }
+}

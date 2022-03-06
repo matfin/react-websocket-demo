@@ -69,8 +69,8 @@ export const ListButton = styled(NavButton)`
 `;
 
 export const BrandLogo = styled(Logo)`
-  width: 3.75rem;
-  height: 1.875rem;
+  width: 2rem;
+  height: 2rem;
 `;
 
 export const Main = styled.main`
