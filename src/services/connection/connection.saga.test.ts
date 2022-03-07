@@ -3,13 +3,20 @@ import { call, select } from 'redux-saga/effects';
 import { expectSaga} from 'redux-saga-test-plan';
 import { throwError } from 'redux-saga-test-plan/providers';
 
+import Config from 'config';
+import { openSocket, closeSocket } from './socket';
 import connectionState from './connection.state';
-import rootSaga, { openSocket, closeSocket, monitorConnection, eventChannelEmitter } from './connection.saga';
+import rootSaga, { monitorConnection, eventChannelEmitter } from './connection.saga';
 import { BannerType } from 'services/notification-banner/banner.state.types';
 import bannerState from 'services/notification-banner/banner.state';
 
 import mockState from 'mocks/mockState';
 import { waitFor } from '@testing-library/react';
+
+jest.mock('./socket', () => ({
+  openSocket: jest.fn(),
+  closeSocket: jest.fn(),
+}));
 
 const dummySocket: WebSocket = {
   close: jest.fn(),
@@ -69,7 +76,7 @@ describe('connection saga', (): void => {
         .withState(mockState)
         .select(connectionState.selectors.getSocket)
         .provide([
-          [call(openSocket, 'ws://159.89.15.214:8080/'), dummySocket]
+          [call(openSocket, Config.wsUri), dummySocket]
         ])
         .put(connectionState.actions.openConnectionSuccess(dummySocket))
         .dispatch(connectionState.actions.openConnectionRequest())
