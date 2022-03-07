@@ -1,4 +1,4 @@
-import { all, call, select, put, takeLatest, take } from 'redux-saga/effects';
+import { all, call, select, put, takeLatest, take, delay, race } from 'redux-saga/effects';
 import { eventChannel, EventChannel, END } from 'redux-saga';
 
 import Config from 'config';
@@ -9,25 +9,33 @@ import connectionState from './connection.state';
 import { ConnectionAction } from './connection.state.types';
 
 export const eventChannelEmitter = (
-  emit: (action: ConnectionAction) => void
+  emit: (action: ConnectionAction) => void,
+  socket: WebSocket
 ) => {
+  const onClose = (): void => emit(connectionState.actions.resetConnection());
   const onOnline = (): void => emit(connectionState.actions.connectionOnline());
   const onOffline = (): void =>
     emit(connectionState.actions.connectionOffline());
 
   window.addEventListener('offline', onOffline);
   window.addEventListener('online', onOnline);
+  socket.addEventListener('close', onClose);
 
   return (): void => {
     window.removeEventListener('offline', onOffline);
     window.removeEventListener('online', onOnline);
+    socket.removeEventListener('close', onClose);
     emit(END);
   };
 };
 
 /* istanbul ignore next */
-export const monitorConnection = (): EventChannel<unknown> => {
-  return eventChannel(eventChannelEmitter);
+export const monitorConnection = (
+  socket: WebSocket
+): EventChannel<unknown> | null => {
+  return eventChannel((emit: (action: ConnectionAction) => void) =>
+    eventChannelEmitter(emit, socket)
+  );
 };
 
 export function* connectionLost(): Generator<unknown> {
@@ -66,21 +74,39 @@ export function* establishConnection(): Generator<unknown> {
     yield put(
       bannerState.actions.showBanner('Connection failed', BannerType.ERROR)
     );
+    yield call(reestablishConnection);
   }
 }
 
-export function* establishConnectionSuccess(): Generator<unknown> {
-  const channel = yield call(monitorConnection);
-
+/* istanbul ignore next */
+export function* reestablishConnection(): Generator<unknown> {
   yield put(
-    bannerState.actions.showBanner('Connected successfully', BannerType.SUCCESS)
+    bannerState.actions.showBanner('Connection to server lost. Reconnecting', BannerType.WARN, 5000)
   );
 
-  /* istanbul ignore next */
-  while (true) {
-    const action = yield take(channel as EventChannel<ConnectionAction>);
+  yield delay(5000);
+  yield call(establishConnection);
+}
 
-    yield put(action as ConnectionAction);
+/* istanbul ignore next */
+export function* establishConnectionSuccess(action: ConnectionAction): Generator<unknown> {
+  const socket: WebSocket = action.payload!.socket!;
+  const channel = yield call(monitorConnection, socket as WebSocket);
+  
+  yield put(bannerState.actions.showBanner('Connected successfully', BannerType.SUCCESS));
+
+  while (true) {
+    const action: any = yield race({
+      connectionActions: take(channel as EventChannel<ConnectionAction>),
+      cancel: take(connectionState.types.RESET_CONNECTION)
+    });
+
+    if (action.cancel) {
+      (channel as EventChannel<ConnectionAction>).close();
+      break;
+    }
+
+    yield put(action.connectionActions as ConnectionAction);
   }
 }
 
@@ -113,6 +139,10 @@ function* rootSaga(): Generator<unknown> {
     takeLatest(
       connectionState.types.OPEN_CONNECTION_SUCCESS,
       establishConnectionSuccess
+    ),
+    takeLatest(
+      connectionState.types.RESET_CONNECTION,
+      reestablishConnection,
     ),
     takeLatest(connectionState.types.CLOSE_CONNECTION_REQUEST, closeConnection),
     takeLatest(connectionState.types.CONNECTION_OFFLINE, connectionLost),

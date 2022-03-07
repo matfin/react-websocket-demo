@@ -1,8 +1,8 @@
 import {
   all,
   call,
-  delay,
   put,
+  race,
   select,
   take,
   takeLatest,
@@ -15,56 +15,80 @@ import { BannerType } from 'services/notification-banner/banner.state.types';
 import connectionState from 'services/connection/connection.state';
 import listState from './list.state';
 import bannerState from 'services/notification-banner/banner.state';
-import { ConnectionAction } from 'services/connection/connection.state.types';
 
 export const eventChannelEmitter = (
-  emit: (action: ListAction | ConnectionAction) => void,
+  emit: (action: ListAction) => void,
   socket: WebSocket,
-  company: Company
-) => {
+): (() => void) => {
   const onMessage = ({ data }: { data: unknown }): void => {
     const stockData: StockData = JSON.parse(data as string);
 
     emit(listState.actions.updateInstrument(stockData));
-  };
-  const payload = JSON.stringify({ subscribe: company.isin });
+  }
 
   socket.addEventListener('message', onMessage);
-  socket.send(payload);
 
   return (): void => {
     socket.removeEventListener('message', onMessage);
-    emit(connectionState.actions.setIsListening(false));
     emit(END);
   };
 };
 
 /* istanbul ignore next */
-export function subscribe(
-  socket: WebSocket,
-  company: Company
+export function setupSocketListener (
+  socket: WebSocket
 ): EventChannel<unknown> | null {
-  return eventChannel((emit: (action: ListAction | ConnectionAction) => void) =>
-    eventChannelEmitter(emit, socket, company)
+  return eventChannel((emit: (action: ListAction) => void) => 
+    eventChannelEmitter(emit, socket)
   );
 }
 
-function* handleUnsubscribeInstrument(action: ListAction): Generator<unknown> {
+/* istanbul ignore next */
+function* handleConnectionSuccess(): Generator<unknown> {
+  const socket = yield select(connectionState.selectors.getSocket);
+  const channel = yield call(setupSocketListener, socket as WebSocket);
+
+  while (true) {
+    const action: any = yield race({
+      refreshInstrument: take(channel as EventChannel<unknown>),
+      cancel: take(connectionState.types.RESET_CONNECTION)
+    });
+
+    if (action.cancel) {
+      (channel as EventChannel<unknown>).close();
+      break;
+    }
+
+    yield put(action.refreshInstrument);
+  }
+}
+
+function* handleInstrumentUnsubscribe(action: ListAction): Generator<unknown> {
   const socket = yield select(connectionState.selectors.getSocket);
   const company: Company = action.payload!.company!;
   const payload = JSON.stringify({ unsubscribe: company.isin });
 
-  (socket as WebSocket).send(payload);
+  try {
+    (socket as WebSocket).send(payload);
 
-  yield delay(200);
-  yield put(listState.actions.removeInstrument(company));
-  yield put(
-    bannerState.actions.showBanner(
-      'Unsubscribed successfully and removed!',
-      BannerType.SUCCESS,
-      2000
-    )
-  );
+    yield put(
+      bannerState.actions.showBanner(
+        'Unsubscribed successfully and removed!',
+        BannerType.SUCCESS,
+        2000
+      )
+    );
+  } catch {
+    yield put(
+      bannerState.actions.showBanner(
+        'Could not unsubscribe from server!',
+        BannerType.ERROR,
+        2000
+      )
+    );
+  } finally {
+    yield put(listState.actions.removeInstrument(company));
+  }
 }
 
 function* handleUnsubscribeAllInstruments(): Generator<unknown> {
@@ -89,19 +113,19 @@ function* handleUnsubscribeAllInstruments(): Generator<unknown> {
 
 function* handleResubscribeAllInstruments(): Generator<unknown> {
   const socket = yield select(connectionState.selectors.getSocket);
-  const unSubscribedIsins = yield select(
+  const unsubscribedIsins = yield select(
     listState.selectors.getUnsubscribedInstrumentIsins
   );
-  const payloads: string[] = (unSubscribedIsins as string[]).map(
+  const payloads: string[] = (unsubscribedIsins as string[]).map(
     (isin: string): string => JSON.stringify({ subscribe: isin })
   );
-
+  
   try {
     yield all(
       payloads.map((payload: string): void =>
         (socket as WebSocket).send(payload)
       )
-    );
+    )
   } finally {
     yield put(listState.actions.updateInstrumentSubscriptions(true));
   }
@@ -110,10 +134,11 @@ function* handleResubscribeAllInstruments(): Generator<unknown> {
 /* istanbul ignore next */
 function* handleOnInstrumentAdded(action: ListAction): Generator<unknown> {
   const socket = yield select(connectionState.selectors.getSocket);
-  const company: Company = action.payload!.company!;
-  const channel = yield call(subscribe, socket as WebSocket, company);
+  const { isin }: Company = action.payload!.company!;
+  const payload: string = JSON.stringify({ subscribe: isin });
 
-  yield put(connectionState.actions.setIsListening(true));
+  (socket as WebSocket).send(payload);
+
   yield put(
     bannerState.actions.showBanner(
       'Subscription successful!',
@@ -121,12 +146,10 @@ function* handleOnInstrumentAdded(action: ListAction): Generator<unknown> {
       2000
     )
   );
+}
 
-  while (true) {
-    const action = yield take(channel as EventChannel<unknown>);
-
-    yield put(action as ListAction);
-  }
+function* handleServerConnectionLost(): Generator<unknown> {
+  yield put(listState.actions.updateInstrumentSubscriptions(false));
 }
 
 function* rootSaga(): Generator<unknown> {
@@ -134,7 +157,7 @@ function* rootSaga(): Generator<unknown> {
     takeLatest(listState.types.ADD_INSTRUMENT, handleOnInstrumentAdded),
     takeLatest(
       listState.types.UNSUBSCRIBE_REQUEST,
-      handleUnsubscribeInstrument
+      handleInstrumentUnsubscribe,
     ),
     takeLatest(
       listState.types.UNSUBSCRIBE_ALL_REQUEST,
@@ -143,6 +166,18 @@ function* rootSaga(): Generator<unknown> {
     takeLatest(
       listState.types.RESUBSCRIBE_ALL_REQUEST,
       handleResubscribeAllInstruments
+    ),
+    takeLatest(
+      connectionState.types.OPEN_CONNECTION_SUCCESS,
+      handleResubscribeAllInstruments
+    ),
+    takeLatest(
+      connectionState.types.OPEN_CONNECTION_SUCCESS,
+      handleConnectionSuccess
+    ),
+    takeLatest(
+      connectionState.types.RESET_CONNECTION,
+      handleServerConnectionLost
     ),
   ]);
 }
