@@ -18,26 +18,52 @@ jest.mock('./socket', () => ({
   closeSocket: jest.fn(),
 }));
 
+const spyAddEventListener = jest.fn();
+const spyRemoveEventListener = jest.fn();
+
 const dummySocket: WebSocket = {
   close: jest.fn(),
   onclose: jest.fn(),
+  addEventListener: spyAddEventListener,
+  removeEventListener: jest.fn(),
 } as unknown as WebSocket;
 
 describe('connection saga', (): void => {
+  afterEach((): void => {
+    spyAddEventListener.mockClear();
+    spyRemoveEventListener.mockClear();
+  });
+
+  it('calls to reestablish a lost connection', async (): Promise<void> => {
+    (openSocket as jest.Mock).mockResolvedValue(dummySocket);
+
+    await expectSaga(rootSaga)
+      .withState(mockState)
+      .put(bannerState.actions.showBanner('Connection to server lost. Reconnecting', BannerType.WARN, 5000))
+      // .delay(5000)
+      // .call(establishConnection)
+      .dispatch(connectionState.actions.resetConnection())
+      .silentRun();
+  });
+
   describe('eventChannelEmitter', (): void => {
     it('adds the correct event listeners and calls END', (): void => {
       jest.spyOn(window, 'addEventListener');
       jest.spyOn(window, 'removeEventListener');
       const spyEmit = jest.fn();
 
-      eventChannelEmitter(spyEmit)();
+      eventChannelEmitter(spyEmit, dummySocket)();
       expect(window.addEventListener).toHaveBeenCalledTimes(2);
+      expect(dummySocket.addEventListener).toHaveBeenCalledTimes(1);
       expect(window.addEventListener).toHaveBeenNthCalledWith(1, 'offline', expect.any(Function));
       expect(window.addEventListener).toHaveBeenNthCalledWith(2, 'online', expect.any(Function));
+      expect(dummySocket.addEventListener).toHaveBeenCalledWith('close', expect.any(Function));
 
       expect(window.removeEventListener).toHaveBeenCalledTimes(2);
+      expect(dummySocket.removeEventListener).toHaveBeenCalledTimes(1);
       expect(window.removeEventListener).toHaveBeenNthCalledWith(1, 'offline', expect.any(Function));
       expect(window.removeEventListener).toHaveBeenNthCalledWith(2, 'online', expect.any(Function));
+      expect(dummySocket.removeEventListener).toHaveBeenCalledWith('close', expect.any(Function));
 
       expect(spyEmit).toHaveBeenCalledWith(END);
 
@@ -48,7 +74,7 @@ describe('connection saga', (): void => {
     it('emits the correct action on online event', async (): Promise<void> => {
       const spyEmit = jest.fn();
 
-      eventChannelEmitter(spyEmit);
+      eventChannelEmitter(spyEmit, dummySocket);
       window.dispatchEvent(new Event('online'));
 
       await waitFor((): void => {
@@ -60,7 +86,7 @@ describe('connection saga', (): void => {
     it('emits the correct action on offline event', async (): Promise<void> => {
       const spyEmit = jest.fn();
 
-      eventChannelEmitter(spyEmit);
+      eventChannelEmitter(spyEmit, dummySocket);
       window.dispatchEvent(new Event('offline'));
 
       await waitFor((): void => {
@@ -68,16 +94,32 @@ describe('connection saga', (): void => {
         expect(spyEmit).toHaveBeenCalledWith(connectionState.actions.connectionOffline());
       });
     });
+
+    it('emits the correct action when the socket is closed', async (): Promise<void> => {
+      const spyEmit = jest.fn();
+
+      (spyAddEventListener as jest.Mock).mockImplementation(
+        (name: string, cb: () => void): void => {
+          expect(name).toEqual('close');
+          cb();
+        }
+      );
+
+      eventChannelEmitter(spyEmit, dummySocket);
+
+      expect(spyEmit).toHaveBeenCalledTimes(1);
+      expect(spyEmit).toHaveBeenCalledWith(connectionState.actions.resetConnection());
+    });
   });
 
   describe('establishConnection', (): void => {
     it('should establish a connection if there is none', async (): Promise<void> => {
+      (openSocket as jest.Mock).mockResolvedValue(dummySocket);
+  
       await expectSaga(rootSaga)
         .withState(mockState)
         .select(connectionState.selectors.getSocket)
-        .provide([
-          [call(openSocket, Config.wsUri), dummySocket]
-        ])
+        .call(openSocket, Config.wsUri)
         .put(connectionState.actions.openConnectionSuccess(dummySocket))
         .dispatch(connectionState.actions.openConnectionRequest())
         .silentRun();
@@ -112,9 +154,9 @@ describe('connection saga', (): void => {
     it('should show a success message and monitor the network on connection success', async (): Promise<void> => {
       await expectSaga(rootSaga)
         .withState(mockState)
-        .call(monitorConnection)
+        .call(monitorConnection, dummySocket)
         .put(bannerState.actions.showBanner('Connected successfully', BannerType.SUCCESS))
-        .dispatch(connectionState.actions.openConnectionSuccess({} as WebSocket))
+        .dispatch(connectionState.actions.openConnectionSuccess(dummySocket as WebSocket))
         .silentRun();
     });
   });

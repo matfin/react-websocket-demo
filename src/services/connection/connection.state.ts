@@ -14,6 +14,7 @@ const CLOSE_CONNECTION_FAILURE = `${REDUCER_NAME}/CLOSE_CONNECTION_FAILURE`;
 const SET_IS_LISTENING = `${REDUCER_NAME}/SET_IS_LISTENING`;
 const CONNECTION_OFFLINE = `${REDUCER_NAME}/CONNECTION_OFFLINE`;
 const CONNECTION_ONLINE = `${REDUCER_NAME}/CONNECTION_ONLINE`;
+const RESET_CONNECTION = `${REDUCER_NAME}/RESET_CONNECTION`;
 
 /** Actions */
 const openConnectionRequest = (): ConnectionAction => ({
@@ -55,6 +56,10 @@ const connectionOffline = (): ConnectionAction => ({
 
 const connectionOnline = (): ConnectionAction => ({
   type: CONNECTION_ONLINE,
+});
+
+const resetConnection = (): ConnectionAction => ({
+  type: RESET_CONNECTION
 });
 
 const setIsListening = (listening: boolean): ConnectionAction => ({
@@ -122,6 +127,9 @@ const reducer = (
         listening: payload!.listening!
       };
     }
+    case RESET_CONNECTION: {
+      return initialState;
+    }
     default:
       return state;
   }
@@ -185,6 +193,7 @@ const connectionState = {
     SET_IS_LISTENING,
     CONNECTION_OFFLINE,
     CONNECTION_ONLINE,
+    RESET_CONNECTION,
   },
   selectors: {
     getSocket: selectSocket,
@@ -202,6 +211,7 @@ const connectionState = {
     setIsListening,
     connectionOffline,
     connectionOnline,
+    resetConnection,
   },
 };
 

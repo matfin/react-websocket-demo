@@ -195,6 +195,16 @@ describe('connection state', (): void => {
       expect(result).toEqual(expected);
     });
 
+    it('sets the state with RESET_CONECTION', (): void => {
+      const expected: ConnectionState = dummyState;
+      const result: ConnectionState = connectionState.reducer(
+        dummyState,
+        connectionState.actions.resetConnection()
+      );
+
+      expect(result).toEqual(expected);
+    });
+
     it('returns the default state with no type match', (): void => {
       const expected: ConnectionState = dummyState;
       const result: ConnectionState = connectionState.reducer(undefined, {
