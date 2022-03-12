@@ -6,7 +6,7 @@ import { throwError } from 'redux-saga-test-plan/providers';
 import Config from 'config';
 import { openSocket, closeSocket } from './socket';
 import connectionState from './connection.state';
-import rootSaga, { monitorConnection, eventChannelEmitter } from './connection.saga';
+import rootSaga, { setupSocketListeners, eventChannelEmitter } from './connection.saga';
 import { BannerType } from 'services/notification-banner/banner.state.types';
 import bannerState from 'services/notification-banner/banner.state';
 
@@ -154,8 +154,9 @@ describe('connection saga', (): void => {
     it('should show a success message and monitor the network on connection success', async (): Promise<void> => {
       await expectSaga(rootSaga)
         .withState(mockState)
-        .call(monitorConnection, dummySocket)
+        .call(setupSocketListeners, dummySocket)
         .put(bannerState.actions.showBanner('Connected successfully', BannerType.SUCCESS))
+        .take(connectionState.types.RESET_CONNECTION)
         .dispatch(connectionState.actions.openConnectionSuccess(dummySocket as WebSocket))
         .silentRun();
     });

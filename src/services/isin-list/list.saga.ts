@@ -43,23 +43,25 @@ export function setupSocketListener (
   );
 }
 
+
+
 /* istanbul ignore next */
 function* handleConnectionSuccess(): Generator<unknown> {
   const socket = yield select(connectionState.selectors.getSocket);
   const channel = yield call(setupSocketListener, socket as WebSocket);
 
   while (true) {
-    const action: any = yield race({
-      refreshInstrument: take(channel as EventChannel<unknown>),
+    const { task, cancel }: any = yield race({
+      task: take(channel as EventChannel<ListAction>),
       cancel: take(connectionState.types.RESET_CONNECTION)
     });
 
-    if (action.cancel) {
-      (channel as EventChannel<unknown>).close();
+    if (cancel) {
+      (channel as EventChannel<ListAction>).close();
       break;
     }
 
-    yield put(action.refreshInstrument);
+    yield put(task);
   }
 }
 
