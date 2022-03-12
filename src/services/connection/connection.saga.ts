@@ -1,4 +1,4 @@
-import { all, call, select, put, takeLatest, take, delay, race } from 'redux-saga/effects';
+import { all, call, select, put, takeLatest, take, delay, fork } from 'redux-saga/effects';
 import { eventChannel, EventChannel, END } from 'redux-saga';
 
 import Config from 'config';
@@ -11,8 +11,10 @@ import { ConnectionAction } from './connection.state.types';
 export const eventChannelEmitter = (
   emit: (action: ConnectionAction) => void,
   socket: WebSocket
-) => {
-  const onClose = (): void => emit(connectionState.actions.resetConnection());
+): (() => void) => {
+  const onClose = (): void => {
+    emit(connectionState.actions.resetConnection());
+  }
   const onOnline = (): void => emit(connectionState.actions.connectionOnline());
   const onOffline = (): void =>
     emit(connectionState.actions.connectionOffline());
@@ -30,7 +32,7 @@ export const eventChannelEmitter = (
 };
 
 /* istanbul ignore next */
-export const monitorConnection = (
+export const setupSocketListeners = (
   socket: WebSocket
 ): EventChannel<unknown> | null => {
   return eventChannel((emit: (action: ConnectionAction) => void) =>
@@ -91,22 +93,19 @@ export function* reestablishConnection(): Generator<unknown> {
 /* istanbul ignore next */
 export function* establishConnectionSuccess(action: ConnectionAction): Generator<unknown> {
   const socket: WebSocket = action.payload!.socket!;
-  const channel = yield call(monitorConnection, socket as WebSocket);
+  const channel = yield call(setupSocketListeners, socket as WebSocket);
   
   yield put(bannerState.actions.showBanner('Connected successfully', BannerType.SUCCESS));
 
-  while (true) {
-    const action: any = yield race({
-      connectionActions: take(channel as EventChannel<ConnectionAction>),
-      cancel: take(connectionState.types.RESET_CONNECTION)
-    });
+  yield fork(function* () {
+    yield take(connectionState.types.RESET_CONNECTION);
+    (channel as EventChannel<ConnectionAction>).close();
+  });
 
-    if (action.cancel) {
-      (channel as EventChannel<ConnectionAction>).close();
-      break;
-    }
+  while(true) {
+    const task = yield take(channel as EventChannel<ConnectionAction>);
 
-    yield put(action.connectionActions as ConnectionAction);
+    yield put(task as ConnectionAction);
   }
 }
 
