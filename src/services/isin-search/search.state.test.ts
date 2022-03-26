@@ -2,7 +2,7 @@ import isins from 'assets/isins.json';
 
 import { CombinedAppState } from 'store.types';
 import searchState from './search.state';
-import { Company, SearchAction, SearchState } from './search.state.types';
+import { Company, SearchState } from './search.state.types';
 
 import mockState from 'mocks/mockState';
 
@@ -66,7 +66,7 @@ describe('search state', (): void => {
       };
       const result: SearchState = searchState.reducer(undefined, {
         type: 'SOMETHING_ELSE',
-      } as unknown as SearchAction);
+      });
 
       expect(result).toEqual(initalState);
     });

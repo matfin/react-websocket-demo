@@ -52,7 +52,6 @@ export const List = ({
           {instruments.map(
             (instrument: Instrument): JSX.Element => (
               <MemoInstrumentItem
-                role="instrument"
                 key={instrument.company.isin}
                 instrument={instrument}
                 onPressDelete={unsubscribe}

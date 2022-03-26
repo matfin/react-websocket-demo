@@ -34,13 +34,13 @@ export const eventChannelEmitter = (
 /* istanbul ignore next */
 export const setupSocketListeners = (
   socket: WebSocket
-): EventChannel<unknown> | null => {
+): EventChannel<ConnectionAction> | null => {
   return eventChannel((emit: (action: ConnectionAction) => void) =>
     eventChannelEmitter(emit, socket)
   );
 };
 
-export function* connectionLost(): Generator<unknown> {
+export function* connectionLost(): Generator {
   yield put(
     bannerState.actions.showBanner(
       'Connection lost. You are offline!',
@@ -50,7 +50,7 @@ export function* connectionLost(): Generator<unknown> {
   );
 }
 
-export function* connectionRegained(): Generator<unknown> {
+export function* connectionRegained(): Generator {
   yield put(
     bannerState.actions.showBanner(
       'Connection regained. You are back online!',
@@ -59,7 +59,7 @@ export function* connectionRegained(): Generator<unknown> {
   );
 }
 
-export function* establishConnection(): Generator<unknown> {
+export function* establishConnection(): Generator {
   try {
     const uri = Config.wsUri;
     const hasSocket = yield select(connectionState.selectors.getSocket);
@@ -81,7 +81,7 @@ export function* establishConnection(): Generator<unknown> {
 }
 
 /* istanbul ignore next */
-export function* reestablishConnection(): Generator<unknown> {
+export function* reestablishConnection(): Generator {
   yield put(
     bannerState.actions.showBanner('Connection to server lost. Reconnecting', BannerType.WARN, 5000)
   );
@@ -91,7 +91,7 @@ export function* reestablishConnection(): Generator<unknown> {
 }
 
 /* istanbul ignore next */
-export function* establishConnectionSuccess(action: ConnectionAction): Generator<unknown> {
+export function* establishConnectionSuccess(action: ConnectionAction): Generator {
   const socket: WebSocket = action.payload!.socket!;
   const channel = yield call(setupSocketListeners, socket as WebSocket);
   
@@ -109,7 +109,7 @@ export function* establishConnectionSuccess(action: ConnectionAction): Generator
   }
 }
 
-export function* closeConnection(): Generator<unknown> {
+export function* closeConnection(): Generator {
   try {
     const socket = yield select(connectionState.selectors.getSocket);
     const hasConnection = socket !== null;
@@ -129,7 +129,7 @@ export function* closeConnection(): Generator<unknown> {
   }
 }
 
-function* rootSaga(): Generator<unknown> {
+function* rootSaga(): Generator {
   yield all([
     takeLatest(
       connectionState.types.OPEN_CONNECTION_REQUEST,

@@ -28,6 +28,7 @@ export const GlobalStyle = createGlobalStyle`
   button {
     border: none;
     background-color: inherit;
+    cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     
     &:focus {

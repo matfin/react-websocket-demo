@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, memo } from 'react';
+import React, { useCallback, useEffect, memo } from 'react';
 import { connect } from 'react-redux';
 
 import { CombinedAppState } from 'store.types';
@@ -40,17 +40,11 @@ export const Search = ({
   reset,
   updateSearchTerm,
 }: Props): JSX.Element => {
-  const [shouldShowNoResults, setShouldShowNoResults] = useState<boolean>(false);
+  const shouldShowNoResults: boolean = companies.length === 0;
 
   useEffect((): (() => void) => {
     return (): void => reset();
   }, []);
-
-  useEffect((): void => {
-    const hasNoCompanies: boolean = companies.length === 0;
-
-    setShouldShowNoResults(hasNoCompanies);
-  }, [companies]);
 
   const onSearchInputChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>): void => {
@@ -78,9 +72,10 @@ export const Search = ({
     <Container>
       <SearchHeader>
         <SearchInput
+          id="search"
           placeholder="Find your company"
           onChange={onSearchInputChange}
-          ariaLabel="companies-search"
+          label="Companies search"
           value={searchTerm}
         />
       </SearchHeader>

@@ -1,7 +1,14 @@
 import React, { useCallback } from 'react';
 
 import { Company } from 'services/isin-search/search.state.types';
-import { BookmarkIcon, BookmarkFilledIcon, Container, CompanyDetails, Title } from './search-result.css';
+import {
+  BookmarkButton,
+  BookmarkIcon,
+  BookmarkFilledIcon,
+  Container,
+  CompanyDetails,
+  Title,
+} from './search-result.css';
 
 export interface Props {
   className?: string;
@@ -10,23 +17,27 @@ export interface Props {
 }
 
 const SearchResult = ({ className, company, onPress }: Props): JSX.Element => {
+  const buttonName: string = company.bookmarked
+    ? 'Remove bookmark'
+    : 'Add bookmark';
+
   const handleOnClick = useCallback((): void => {
     onPress(company);
   }, [company]);
 
   return (
-    <Container className={className} onClick={handleOnClick} role="button">
-      <Title>
-        {company.name}
-      </Title>
+    <Container className={className}>
+      <Title>{company.name}</Title>
       <CompanyDetails>
         {company.isin} / {company.shortName}
       </CompanyDetails>
-      {company.bookmarked ? (
-        <BookmarkFilledIcon />
-      ) : (
-        <BookmarkIcon />
-      )}
+      <BookmarkButton name={buttonName} aria-label={buttonName} onClick={handleOnClick}>
+        {company.bookmarked ? (
+          <BookmarkFilledIcon aria-hidden="true" />
+        ) : (
+          <BookmarkIcon aria-hidden="true" />
+        )}
+      </BookmarkButton>
     </Container>
   );
 };

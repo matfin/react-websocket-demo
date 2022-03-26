@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { boxShadow, colours, fonts } from 'styles/vars';
+import { boxShadow, fonts } from 'styles/vars';
 import { font } from 'styles/mixins';
 import TextInput from 'components/text-input';
 import SearchResult from 'components/search-result';
@@ -24,18 +24,8 @@ export const SearchHeader = styled.div`
 export const SearchInput = styled(TextInput)`
   flex: 1;
   margin: 0 1rem;
-  height: 3rem;
-
-  border: 0;
-  border-radius: 0;
-  border-bottom: 0.125rem solid ${colours.tertiary};
-
-  ::placeholder {
-    color: ${colours.tertiary};
-  }
-
-  ${font(fonts.md)};
-`
+  height: 4rem;
+`;
 
 export const ResultsList = styled.ul`
   grid-area: list;
