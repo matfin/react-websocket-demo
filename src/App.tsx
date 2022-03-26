@@ -33,13 +33,13 @@ export const App = ({ openConnection }: Props) => {
       <Container>
         <Header>
           <Nav>
-            <Link to="/">
+            <Link title="Home" to="/">
               <BrandLogo />
             </Link>
-            <ListButton to="/">
+            <ListButton title="My List" to="/">
               My list <BarChart fill="#fff" />
             </ListButton>
-            <NavButton to="/search">
+            <NavButton title="Add to list" to="/search">
               Add <Plus fill="#fff" />
             </NavButton>
           </Nav>

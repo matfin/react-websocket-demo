@@ -37,16 +37,14 @@ export const eventChannelEmitter = (
 /* istanbul ignore next */
 export function setupSocketListener (
   socket: WebSocket
-): EventChannel<unknown> | null {
+): EventChannel<ListAction> | null {
   return eventChannel((emit: (action: ListAction) => void) => 
     eventChannelEmitter(emit, socket)
   );
 }
 
-
-
 /* istanbul ignore next */
-function* handleConnectionSuccess(): Generator<unknown> {
+function* handleConnectionSuccess(): Generator {
   const socket = yield select(connectionState.selectors.getSocket);
   const channel = yield call(setupSocketListener, socket as WebSocket);
 
@@ -65,7 +63,7 @@ function* handleConnectionSuccess(): Generator<unknown> {
   }
 }
 
-function* handleInstrumentUnsubscribe(action: ListAction): Generator<unknown> {
+function* handleInstrumentUnsubscribe(action: ListAction): Generator {
   const socket = yield select(connectionState.selectors.getSocket);
   const company: Company = action.payload!.company!;
   const payload = JSON.stringify({ unsubscribe: company.isin });
@@ -93,7 +91,7 @@ function* handleInstrumentUnsubscribe(action: ListAction): Generator<unknown> {
   }
 }
 
-function* handleUnsubscribeAllInstruments(): Generator<unknown> {
+function* handleUnsubscribeAllInstruments(): Generator {
   const socket = yield select(connectionState.selectors.getSocket);
   const subscribedIsins = yield select(
     listState.selectors.getSubscribedInstrumentIsins
@@ -113,7 +111,7 @@ function* handleUnsubscribeAllInstruments(): Generator<unknown> {
   }
 }
 
-function* handleResubscribeAllInstruments(): Generator<unknown> {
+function* handleResubscribeAllInstruments(): Generator {
   const socket = yield select(connectionState.selectors.getSocket);
   const unsubscribedIsins = yield select(
     listState.selectors.getUnsubscribedInstrumentIsins
@@ -134,7 +132,7 @@ function* handleResubscribeAllInstruments(): Generator<unknown> {
 }
 
 /* istanbul ignore next */
-function* handleOnInstrumentAdded(action: ListAction): Generator<unknown> {
+function* handleOnInstrumentAdded(action: ListAction): Generator {
   const socket = yield select(connectionState.selectors.getSocket);
   const { isin }: Company = action.payload!.company!;
   const payload: string = JSON.stringify({ subscribe: isin });
@@ -150,11 +148,11 @@ function* handleOnInstrumentAdded(action: ListAction): Generator<unknown> {
   );
 }
 
-function* handleServerConnectionLost(): Generator<unknown> {
+function* handleServerConnectionLost(): Generator {
   yield put(listState.actions.updateInstrumentSubscriptions(false));
 }
 
-function* rootSaga(): Generator<unknown> {
+function* rootSaga(): Generator {
   yield all([
     takeLatest(listState.types.ADD_INSTRUMENT, handleOnInstrumentAdded),
     takeLatest(

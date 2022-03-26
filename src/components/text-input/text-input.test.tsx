@@ -4,7 +4,8 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import TextInput, { Props } from './text-input';
 
 const defaultProps: Props = {
-  ariaLabel: 'test-input',
+  id: 'test-id',
+  label: 'Text input',
   value: '',
   placeholder: '',
   onChange: jest.fn(),
@@ -13,7 +14,9 @@ const defaultProps: Props = {
 describe('TextInput', (): void => {
   it('should render the comoonent', (): void => {
     expect(() => render(<TextInput {...defaultProps} />)).not.toThrow();
-    expect(() => render(<TextInput {...defaultProps} ariaLabel={undefined} />)).not.toThrow();
+    expect(() =>
+      render(<TextInput {...defaultProps} label={undefined} />)
+    ).not.toThrow();
   });
 
   it('should execute the callback onChange', async (): Promise<void> => {

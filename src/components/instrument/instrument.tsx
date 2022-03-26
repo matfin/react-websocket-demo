@@ -19,12 +19,11 @@ import {
 
 export interface Props {
   className?: string;
-  role?: string;
   instrument: Instrument;
   onPressDelete: (company: Company) => void;
 }
 
-const InstrumentTile = ({ className, role, instrument, onPressDelete }: Props): JSX.Element => {
+const InstrumentTile = ({ className, instrument, onPressDelete }: Props): JSX.Element => {
   const {
     company,
     stockData,
@@ -33,7 +32,7 @@ const InstrumentTile = ({ className, role, instrument, onPressDelete }: Props): 
   const handlePressDelete = useCallback((): void => onPressDelete(instrument.company), []);
 
   return (
-    <Container role={role} className={className} onClick={handlePressDelete}>
+    <Container className={className}>
       <CompanyInfo>
         <CompanyName>
           {company.name}
@@ -67,8 +66,8 @@ const InstrumentTile = ({ className, role, instrument, onPressDelete }: Props): 
             {formattedCurrency(stockData.price)}
           </Price>
         </PriceItem>
-        <DeleteButton data-testid={`delete-instrument-${instrument.company.isin}`}>
-          <DeleteIcon />
+        <DeleteButton onClick={handlePressDelete} name="Delete instrument" data-testid={`delete-instrument-${instrument.company.isin}`}>
+          <DeleteIcon aria-hidden="true" />
         </DeleteButton>
       </PriceInfo>
     </Container>

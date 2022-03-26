@@ -1,10 +1,10 @@
 import React from 'react';
 
-import { InputBox } from './text-input.css';
+import { Container, InputBox, Label } from './text-input.css';
 
 export interface Props {
-  role?: string;
-  ariaLabel?: string;
+  id: string;
+  label?: string;
   className?: string;
   value?: string;
   placeholder?: string;
@@ -13,21 +13,17 @@ export interface Props {
 }
 
 const TextInput = ({
-  role = 'textbox',
-  ariaLabel = 'text-input',
+  id,
+  label = 'Text input',
   className,
   onChange,
   placeholder,
   value,
 }: Props): JSX.Element => (
-  <InputBox
-    className={className}
-    aria-label={ariaLabel}
-    onChange={onChange}
-    placeholder={placeholder}
-    value={value}
-    role={role}
-  />
+  <Container className={className}>
+    <Label htmlFor={id}>{label}</Label>
+    <InputBox id={id} onChange={onChange} placeholder={placeholder} value={value} />
+  </Container>
 );
 
 export default TextInput;
