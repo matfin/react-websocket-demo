@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, memo } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import { CombinedAppState } from 'store.types';
 import SearchState from 'services/isin-search/search.state';
 import ListState from 'services/isin-list/list.state';
 import { Company } from 'services/isin-search/search.state.types';
-import { Props as SearchResultProps } from 'components/search-result/search-result';
 
 import {
   Container,
@@ -26,12 +25,6 @@ export interface Props {
   updateSearchTerm: (searchTerm: string) => void;
 }
 
-const MemoResultItem = memo(
-  (props: SearchResultProps): JSX.Element => <ResultItem {...props} />
-);
-
-MemoResultItem.displayName = 'SearchResult';
-
 export const Search = ({
   companies,
   searchTerm,
@@ -41,7 +34,7 @@ export const Search = ({
   updateSearchTerm,
 }: Props): JSX.Element => {
   const shouldShowNoResults: boolean = companies.length === 0;
-
+  
   useEffect((): (() => void) => {
     return (): void => reset();
   }, []);
@@ -85,7 +78,7 @@ export const Search = ({
         <ResultsList>
           {companies.map((company: Company): JSX.Element => {
             return (
-              <MemoResultItem
+              <ResultItem
                 onPress={handleResultItemClick}
                 key={company.isin}
                 company={company}

@@ -1,5 +1,6 @@
 import { createSelector } from '@reduxjs/toolkit';
 
+import { arraysAreEqual } from 'utils';
 import {
   Instrument,
   Instruments,
@@ -122,17 +123,17 @@ export const handleUpdateInstrumentStockData = (
         ...state.instruments[stockData.isin],
         stockData,
         subscribed: true,
-      }
-    }
-  }
-}
+      },
+    },
+  };
+};
 
 export const handleUpdateInstrumentsSubscribed = (
   state: ListState,
   subscribed: boolean
 ): ListState => {
   const { instruments } = state;
-  const unsubscribed: Instruments = Object.values(instruments)
+  const toModify: Instruments = Object.values(instruments)
     .map(
       (instrument: Instrument): Instrument => ({ ...instrument, subscribed })
     )
@@ -145,7 +146,7 @@ export const handleUpdateInstrumentsSubscribed = (
 
   return {
     ...state,
-    instruments: unsubscribed,
+    instruments: toModify,
   };
 };
 
@@ -188,38 +189,40 @@ export const handleRemoveInstrument = (
 };
 
 /** Selectors */
-const instrumentsSelector = ({
+const selectInstruments = ({
   list: { instruments },
 }: {
   list: ListState;
-}): { [index: string]: Instrument } => instruments;
+}): Instrument[] => Object.values(instruments);
 
-const selectInstruments = createSelector(
-  instrumentsSelector,
-  (instruments: { [index: string]: Instrument }): Instrument[] =>
-    Object.values(instruments)
-);
-
+/* istanbul ignore next */
 const selectInstrumentIsins = createSelector(
-  instrumentsSelector,
-  (instruments: { [index: string]: Instrument }): string[] =>
-    Object.values(instruments).map(
+  selectInstruments,
+  (instruments: Instrument[]): string[] =>
+   instruments.map(
       ({ company: { isin } }: Instrument): string => isin
-    )
+    ),
+  {
+    memoizeOptions: {
+      maxSize: 1,
+      resultEqualityCheck: (a: string[], b: string[]): boolean =>
+        arraysAreEqual(a, b),
+    },
+  }
 );
 
 const selectSubscribedIsins = createSelector(
-  instrumentsSelector,
-  (instruments: { [index: string]: Instrument }): string[] =>
-    Object.values(instruments)
+  selectInstruments,
+  (instruments: Instrument[]): string[] =>
+    instruments
       .filter(({ subscribed }: Instrument): boolean => subscribed)
       .map(({ company: { isin } }: Instrument): string => isin)
 );
 
 const selectUnsubscribedIsins = createSelector(
-  instrumentsSelector,
-  (instruments: { [index: string]: Instrument }): string[] =>
-    Object.values(instruments)
+  selectInstruments,
+  (instruments: Instrument[]): string[] =>
+    instruments
       .filter(({ subscribed }: Instrument): boolean => !subscribed)
       .map(({ company: { isin } }: Instrument): string => isin)
 );

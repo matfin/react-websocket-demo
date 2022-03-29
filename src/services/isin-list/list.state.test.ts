@@ -286,5 +286,55 @@ describe('list state', (): void => {
         'IE123456',
       ]);
     });
+
+    it('getSubscribedInstrumentIsins', (): void => {
+      expect(listState.selectors.getSubscribedInstrumentIsins({
+        ...appState,
+        list: {
+          instruments: {
+            ['IE123']: {
+              ...instrument,
+              company: {
+                ...instrument.company,
+                isin: 'IE123'
+              }
+            },
+            ['IE456']: {
+              ...instrument,
+              company: {
+                ...instrument.company,
+                isin: 'IE456',
+              },
+              subscribed: true
+            }
+          }
+        }
+      })).toEqual(['IE456']);
+    });
+
+    it('getUnsubscribedInstrumentIsins', (): void => {
+      expect(listState.selectors.getUnsubscribedInstrumentIsins({
+        ...appState,
+        list: {
+          instruments: {
+            ['IE123']: {
+              ...instrument,
+              company: {
+                ...instrument.company,
+                isin: 'IE123'
+              }
+            },
+            ['IE456']: {
+              ...instrument,
+              company: {
+                ...instrument.company,
+                isin: 'IE456',
+              },
+              subscribed: true
+            }
+          }
+        }
+      })).toEqual(['IE123']);
+    });
   });
 });
