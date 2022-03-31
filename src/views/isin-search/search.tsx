@@ -34,10 +34,10 @@ export const Search = ({
   updateSearchTerm,
 }: Props): JSX.Element => {
   const shouldShowNoResults: boolean = companies.length === 0;
-  
+
   useEffect((): (() => void) => {
     return (): void => reset();
-  }, []);
+  }, [reset]);
 
   const onSearchInputChange = useCallback(
     (e: React.FormEvent<HTMLInputElement>): void => {
@@ -47,7 +47,7 @@ export const Search = ({
 
       updateSearchTerm(value);
     },
-    []
+    [updateSearchTerm]
   );
 
   const handleResultItemClick = useCallback(
@@ -58,7 +58,7 @@ export const Search = ({
         addInstrument(company);
       }
     },
-    []
+    [unsubscribe, addInstrument]
   );
 
   return (

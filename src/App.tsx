@@ -26,7 +26,7 @@ export interface Props {
 export const App = ({ openConnection }: Props) => {
   useEffect((): void => {
     openConnection();
-  }, []);
+  }, [openConnection]);
   
   return (
     <>

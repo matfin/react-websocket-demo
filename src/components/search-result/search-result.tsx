@@ -23,7 +23,7 @@ const SearchResult = ({ className, company, onPress }: Props): JSX.Element => {
 
   const handleOnClick = useCallback((): void => {
     onPress(company);
-  }, [company]);
+  }, [onPress, company]);
 
   return (
     <Container className={className}>

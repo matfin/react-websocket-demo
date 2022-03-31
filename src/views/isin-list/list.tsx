@@ -39,7 +39,7 @@ export const List = ({
     resubscribeAll();
 
     return (): void => unsubscribeAll();
-  }, []);
+  }, [resubscribeAll, unsubscribeAll]);
 
   return (
     <Container>
