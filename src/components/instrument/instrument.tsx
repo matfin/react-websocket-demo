@@ -23,50 +23,44 @@ export interface Props {
   onPressDelete: (company: Company) => void;
 }
 
-const InstrumentTile = ({ className, instrument, onPressDelete }: Props): JSX.Element => {
-  const {
-    company,
-    stockData,
-  } = instrument;
+const InstrumentTile = ({
+  className,
+  instrument,
+  onPressDelete,
+}: Props): JSX.Element => {
+  const { company, stockData } = instrument;
 
-  const handlePressDelete = useCallback((): void => onPressDelete(instrument.company), []);
+  const handlePressDelete = useCallback(
+    (): void => onPressDelete(instrument.company),
+    [instrument.company, onPressDelete]
+  );
 
   return (
     <Container className={className}>
       <CompanyInfo>
-        <CompanyName>
-          {company.name}
-        </CompanyName>
+        <CompanyName>{company.name}</CompanyName>
         <CompanyMetadata>
           {company.shortName} / {company.isin}
         </CompanyMetadata>
       </CompanyInfo>
       <PriceInfo>
         <PriceItem>
-          <PriceItemLabel>
-            Bid
-          </PriceItemLabel>
-          <Price>
-            {formattedCurrency(stockData.bid)}
-          </Price>
+          <PriceItemLabel>Bid</PriceItemLabel>
+          <Price>{formattedCurrency(stockData.bid)}</Price>
         </PriceItem>
         <PriceItem>
-          <PriceItemLabel>
-            Ask
-          </PriceItemLabel>
-          <Price>
-            {formattedCurrency(stockData.ask)}
-          </Price>
+          <PriceItemLabel>Ask</PriceItemLabel>
+          <Price>{formattedCurrency(stockData.ask)}</Price>
         </PriceItem>
         <PriceItem>
-          <PriceItemLabel>
-            Price
-          </PriceItemLabel>
-          <Price>
-            {formattedCurrency(stockData.price)}
-          </Price>
+          <PriceItemLabel>Price</PriceItemLabel>
+          <Price>{formattedCurrency(stockData.price)}</Price>
         </PriceItem>
-        <DeleteButton onClick={handlePressDelete} name="Delete instrument" data-testid={`delete-instrument-${instrument.company.isin}`}>
+        <DeleteButton
+          onClick={handlePressDelete}
+          name="Delete instrument"
+          data-testid={`delete-instrument-${instrument.company.isin}`}
+        >
           <DeleteIcon aria-hidden="true" />
         </DeleteButton>
       </PriceInfo>
