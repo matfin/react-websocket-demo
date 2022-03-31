@@ -143,7 +143,6 @@ describe('connection saga', (): void => {
         .provide([
           [select(connectionState.selectors.getSocket), throwError(dummyError)]
         ])
-        .put(connectionState.actions.openConnectionFailure(dummyError))
         .put(bannerState.actions.showBanner('Connection failed', BannerType.ERROR))
         .dispatch(connectionState.actions.openConnectionRequest())
         .silentRun();
@@ -211,7 +210,7 @@ describe('connection saga', (): void => {
         .provide([
           [select(connectionState.selectors.getSocket), throwError(dummyError)]
         ])
-        .put(connectionState.actions.closeConnectionFailure(dummyError))
+        .put(bannerState.actions.showBanner('Failed to close connection', BannerType.ERROR))
         .dispatch(connectionState.actions.closeConnectionRequest())
         .silentRun();
     });

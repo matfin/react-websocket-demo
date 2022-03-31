@@ -10,10 +10,7 @@ const mockState: CombinedAppState = {
     instruments: {},
   },
   connection: {
-    connected: false,
-    error: null,
     socket: null,
-    listening: false,
   },
   banner: {
     type: BannerType.SUCCESS,

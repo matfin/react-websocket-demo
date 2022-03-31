@@ -64,17 +64,23 @@ In this app, users select a company they are interested in from a searchable lis
 ##### Q: What happens if the websocket connection is lost?
 When the WebSocket disconnects, a banner is shown to the user informing them that the connection is lost. When the connection is re-established, the websocket automatically receives data being sent to the server and the feeds update in real time.
 
+Aside from that, a warning is also shown if the server goes down. In this instance, the current connection is reset and an attempt is made to re-establish the connection every 5 seconds until success.
+
 ##### Q: What happens if a user tries to add an instrument multiple times?
 When using this app, a user won't be able to add an instrument more than once, because the state management keeps track of instruments already added when conducing a search. If the user taps on a search result from the list of items on the search view, and the company is already and subscribed and in the list, the company will be unsubscribed.
 
 The list of instruments displayed with real time data are designed to call to subscribe to the websocket by sending a `{ subscribe: <isin> }` payload when they are added. When an instrument is removed from the list, a call to unsubscribe is made by sending `{ unsubscribe: <isin> }`. Once the call to unsubscribe has succeeded, the instrument is removed from the list.
 
 ##### Q: What other performance considerations have been made?
-It's also worth noting that when the user has a list of instruments they are subscribd to and they navigate to the list view, a call to subscribe to the websocket feed for al these insturments is made.
+It's also worth noting that when the user has a list of instruments they are subscribed to and they navigate to the list view, a call to subscribe to the websocket feed for al these insturments is made.
 
 When the user navigates away from the list view, a call to unsibscribe from all feeds is made, so as not to create any unnecessary connection and state updates.
 
 The use of selectors has also been included when accessing state variables from either the components themselves or the redux sagas for state management. Redux `createSelect` memoizes selectors, so if the inputs are the same, the output will be cached for improved performance.
 
+A custom memoization function has been added when fetching a list of ISINs to determine which ones should be bookmarked on the search results view. The output for the selector has a custom equality check to prevent unnecessary updates to `mapDispatchToProps`, which then may trigger unnecessary re-renders in the search view component.
+
 Careful consideration has also been given to potentially expensive operations, so these are kept in the Redux saga logic and out of the components.
+
+A strict teardown for WebSocket connections has also been implemented to prevent memory leaks.
 
